@@ -26,7 +26,7 @@ function Navigation() {
             if (route.name === 'Comanda') {
               iconName = focused ? icons.search : icons.search;
             } else if (route.name === 'Rezervari') {
-              iconName = isHeartPressed ? icons.heartRed : icons.heart; 
+              iconName = isHeartPressed ? icons.heart : icons.heart; 
             }
 
             return <Image source={iconName} style={{ width: size, height: size, tintColor: color }} />;
