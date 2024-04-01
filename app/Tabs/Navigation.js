@@ -23,7 +23,7 @@ function Navigation() {
             if (route.name === "Comanda") {
               iconName = focused ? icons.search : icons.search;
             } else if (route.name === "Rezervari") {
-              iconName = isHeartPressed ? icons.heartRed : icons.heart;
+              iconName = isHeartPressed ? icons.heart : icons.heart;
             }else if(route.name === "Profil"){
               iconName = focused? icons.menu : icons.menu;
             }
@@ -35,7 +35,7 @@ function Navigation() {
               />
             );
           },
-          tabBarActiveTintColor: "green",
+          tabBarActiveTintColor: "red",
           tabBarInactiveTintColor: "black",
           tabBarLabelStyle: {
             fontSize: 17,
