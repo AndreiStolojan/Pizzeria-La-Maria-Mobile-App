@@ -15,7 +15,10 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "usesIcloudStorage": true,
+      "bundelIdentifier": "com.misscoding.sqliteexample"
+
     },
     "android": {
       "adaptiveIcon": {
@@ -25,6 +28,14 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins" : [
+      [
+        "expo-document-picker",
+        {
+          "IcloudContainerEnvironment": "Development"
+        }
+      ]
+    ]
   }
 }

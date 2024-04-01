@@ -4,13 +4,17 @@ import { NavigationContainer } from '@react-navigation/native';
 import Comanda from './Screens/Comanda';
 import Rezervari from './Screens/Rezervari';
 import { useState } from 'react'; 
-import { Image } from 'react-native';
+import { Image, View,Text,TextInput,Button ,StyleSheet} from 'react-native';
 import icons from './../../constants/icons'; 
+
 
 const Tab = createBottomTabNavigator();
 
 function Navigation() {
   const [isHeartPressed, setIsHeartPressed] = useState(false); 
+
+  
+
 
   return (
     <NavigationContainer>
@@ -52,5 +56,11 @@ function Navigation() {
     </NavigationContainer>
   );
 }
+
+const styles=StyleSheet.create(
+  {
+    
+  }
+)
 
 export default Navigation;
