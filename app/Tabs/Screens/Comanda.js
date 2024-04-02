@@ -6,7 +6,7 @@ function Comanda() {
   return (
     <ScrollView nestedScrollEnabled={true} style={styles.scrollView}>
       <View style={styles.container}>
-        <Text>Sunteți pe pagina de comenzi</Text>
+        <Text>Da ma da pagina de comenzi</Text>
         {/* Aici poți adăuga mai mult conținut */}
       </View>
     </ScrollView>
