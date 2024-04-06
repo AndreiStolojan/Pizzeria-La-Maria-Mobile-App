@@ -1,14 +1,18 @@
-// Comanda.js
 import React from 'react';
-import { ScrollView, View, Text, StyleSheet } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, Dimensions, ImageBackground } from 'react-native';
+
+
+const { height, width } = Dimensions.get('window');
 
 function Comanda() {
   return (
     <ScrollView nestedScrollEnabled={true} style={styles.scrollView}>
-      <View style={styles.container}>
-        <Text>Da ma da pagina de comenzi</Text>
-        {/* Aici poți adăuga mai mult conținut */}
-      </View>
+      <ImageBackground source={require('../../../assets/images/360_F_563062991_F2AEcsJ0dwAkIx07k2su58MAQTXi3rDU.jpg')} style={styles.backgroundImage}>
+        <View style={styles.container}>
+          <Text>Da ma da pagina de comenzi</Text>
+          {/* Aici poți adăuga mai mult conținut */}
+        </View>
+      </ImageBackground>
     </ScrollView>
   );
 }
@@ -22,6 +26,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+  },
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover', // Pentru a acoperi întreaga suprafață a ecranului
+    justifyContent: 'center',
+    width: width,
+    height: height,
   },
 });
 

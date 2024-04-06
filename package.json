@@ -13,8 +13,11 @@
     "@react-navigation/bottom-tabs": "^6.5.19",
     "expo": "~50.0.13",
     "expo-status-bar": "~1.11.1",
+    "formik": "^2.4.5",
     "react": "18.2.0",
-    "react-native": "0.73.5"
+    "react-native": "0.73.5",
+    "styled-components": "^6.1.8",
+    "@react-native-community/datetimepicker": "7.6.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
