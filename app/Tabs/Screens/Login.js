@@ -1,78 +1,117 @@
-// Login.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { 
+  StyledContainer, 
+  InnerContainer, 
+  PageLogo, 
+  PageTitle, 
+  StyledFormArea, 
+  SubTitle, 
+  LeftIcon, 
+  ExtraView, 
+  StyledInputLabel, 
+  MsgBox, 
+  StyledTextInput, 
+  RightIcon, 
+  StyledButton, 
+  ButtonText, 
+  TextLink,
+  TextLinkContent
+} from '../../../styles';
+import { StatusBar } from 'expo-status-bar';
+import { Formik } from 'formik';
+import { View, Text } from 'react-native';
+import { Octicons } from '@expo/vector-icons';
+import { Colors } from '../../../styles';
+import { FontAwesome } from '@expo/vector-icons';
 
-function Login() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+const { rems_color, darkLight, primary } = Colors;
 
-  const handleLogin = () => {
-    // Implementează funcționalitatea de autentificare aici
-    console.log('Username:', username);
-    console.log('Password:', password);
-  };
-
+const MyTextInput = ({ label1, icon, isPassword, hidePassword, setHidePassword, ...props }) => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Autentificare</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Nume de utilizator"
-        value={username}
-        onChangeText={(text) => setUsername(text)}
-        placeholderTextColor="#777" // culoare text placeholder
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Parolă"
-        secureTextEntry={true}
-        value={password}
-        onChangeText={(text) => setPassword(text)}
-        placeholderTextColor="#777" // culoare text placeholder
-      />
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Autentificare</Text>
-      </TouchableOpacity>
+    <View>
+      <LeftIcon>
+        <Octicons name={icon} size={30} color={rems_color} />
+      </LeftIcon>
+      <StyledInputLabel style={{ color: primary }}>{label1}</StyledInputLabel>
+      <StyledTextInput {...props} placeholder={label1} />
+      {isPassword && (
+        <RightIcon onPress={() => setHidePassword(!hidePassword)}>
+          <Octicons name={hidePassword ? 'eye-closed' : 'eye'} size={25} color={rems_color} />
+        </RightIcon>
+      )}
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  input: {
-    width: '100%',
-    color: 'red',
-    fontWeight: 'bold',
-    height: 40,
-    borderWidth: 1,
-    borderColor: 'red',
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-  },
-  button: {
-    backgroundColor: 'blue',
-    padding: 15,
-    borderRadius: 20,
-    width: '100%',
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-});
+const Login = () => {
+  const [hidePassword, setHidePassword] = useState(true);
+
+  return (
+    <StyledContainer>
+      <StatusBar style='light' />
+      <InnerContainer>
+        <PageLogo resizeMode='cover' source={require('../../../assets/images/rems_logo.jpg')} />
+        <PageTitle>Welcome to Rem's family! </PageTitle>
+        <SubTitle>Account Registration</SubTitle>
+        <Formik
+          initialValues={{ email: '', password: '' }}
+          onSubmit={(values) => {
+            console.log(values);
+          }}
+        >
+          {({ handleChange, handleBlur, handleSubmit, values }) => (
+            <StyledFormArea>
+              <MyTextInput
+                label1='Email address'
+                icon='mail'
+                placeholder='rems@gmail.com'
+                placeholderTextColor={darkLight}
+                onChangeText={handleChange('email')}
+                onBlur={handleBlur('email')}
+                value={values.email}
+                keyboardType='email-address'
+              />
+              <MyTextInput
+                label1='Password'
+                icon="lock"
+                placeholder='*********'
+                placeholderTextColor={darkLight}
+                onChangeText={handleChange('password')}
+                onBlur={handleBlur('password')}
+                value={values.password}
+                secureTextEntry={hidePassword}
+                isPassword={true}
+                hidePassword={hidePassword}
+                setHidePassword={setHidePassword}
+              />
+              <MsgBox>...</MsgBox>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <StyledButton style={{ width: 150 }} onPress={handleSubmit}>
+                  <ButtonText>
+                    Login
+                  </ButtonText>
+                </StyledButton>
+                <StyledButton google={true} style={{ width: 150 }} onPress={handleSubmit}>
+                  <FontAwesome name='google' color={primary} size={25} />
+                  <ButtonText google={true}>
+                    Sign In
+                  </ButtonText>
+                </StyledButton>
+              </View>
+              <ExtraView style={{ justifyContent: 'center', alignItems: 'center', marginTop: 5 }}>
+                  <Text style={{ color: 'white', fontSize: 18,margin: 10 }}>
+                    Nu aveti un cont?
+                    <TextLink style={{ marginLeft: 5 }}>
+                      <TextLinkContent>SignUp</TextLinkContent>
+                    </TextLink>
+                  </Text>
+                </ExtraView>
+            </StyledFormArea>
+          )}
+        </Formik>
+      </InnerContainer>
+    </StyledContainer>
+  );
+};
 
 export default Login;

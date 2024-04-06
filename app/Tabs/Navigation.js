@@ -35,12 +35,14 @@ function Navigation() {
               />
             );
           },
-          tabBarActiveTintColor: "red",
+          tabBarActiveTintColor: "#064B52", //culoarea rems
           tabBarInactiveTintColor: "black",
           tabBarLabelStyle: {
             fontSize: 17,
             fontWeight: "bold",
           },
+          headerTransparent: true,
+          headerTitle: ' '
         })}
         tabBarStyle={{
           // Mutăm stilurile de tab în screenOptions
