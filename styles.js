@@ -52,6 +52,10 @@ export const PageTitle = styled.Text`
   text-align: center;
   font-weight: bold;
   color: ${primary};
+
+  ${(props) => props.welcome && `
+    font-size: 35px;
+  `}
 `;
 
 export const SubTitle = styled.Text`
@@ -61,6 +65,11 @@ export const SubTitle = styled.Text`
   letter-spacing: 1px;
   color: ${primary};
   margin: 10px;
+
+  ${(props) => props.welcome && `
+    margin-bottom: 5px;
+    font-weight: normal;  
+  `}
 `;
 
 export const StyledFormArea = styled.View`
@@ -158,5 +167,34 @@ export const TextLink = styled.Text`
 
 export const TextLinkContent = styled.Text`
   color: ${gri};
-  font-size: 15px;
+  font-size: 17px;
 `;
+
+export const WelcomeContainer = styled(InnerContainer)`
+    padding: 25px;
+    padding-top: 10px;
+    justify-content: center;
+    background-color: ${rems_color};
+    flex: 1;
+    background-color: ${rems_color};
+    
+`
+
+
+export const Avatar = styled.Image`
+    width: 100px;
+    height: 100px;
+    margin: auto;
+    border-radius: 50px;
+    border-width: 2px;
+    border-color: ${secondary}; /* Corectare aici */
+    margin-bottom: 10px;
+    margin-top: 10px;
+`;
+
+
+export const WelcomeImage = styled.Image`
+    height: 50%;
+    width: 140%
+    
+`
