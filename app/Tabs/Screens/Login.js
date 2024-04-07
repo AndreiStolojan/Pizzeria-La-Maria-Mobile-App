@@ -55,7 +55,7 @@ const MyTextInput = ({
   );
 };
 
-const Login = () => {
+const Login = ({navigation}) => {
   const [hidePassword, setHidePassword] = useState(true);
 
   return (
@@ -67,12 +67,13 @@ const Login = () => {
             resizeMode="cover"
             source={require("../../../assets/images/rems_logo.jpg")}
           />
-          <PageTitle>Welcome to Rem's family! </PageTitle>
+          <PageTitle>Login to your account </PageTitle>
           <SubTitle>Account Registration</SubTitle>
           <Formik
             initialValues={{ email: "", password: "" }}
             onSubmit={(values) => {
               console.log(values);
+              navigation.navigate("Welcome")
             }}
           >
             {({ handleChange, handleBlur, handleSubmit, values }) => (
@@ -128,7 +129,7 @@ const Login = () => {
                 >
                   <Text style={{ color: "white", fontSize: 18, margin: 10 }}>
                     Nu aveti un cont?
-                    <TextLink style={{ marginLeft: 5 }}>
+                    <TextLink style={{ marginLeft: 5 }} onPress={() => navigation.navigate("SignUp")} >
                       <TextLinkContent>SignUp</TextLinkContent>
                     </TextLink>
                   </Text>

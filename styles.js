@@ -33,7 +33,7 @@ export const StyledContainer = styled.View`
   flex: 1;
   padding: 25px;
   background-color: ${rems_color};
-  padding-top: ${StatusBarHeight + 10}px;
+  padding-top: ${StatusBarHeight + 30}px;
 `;
 
 export const InnerContainer = styled.View`
