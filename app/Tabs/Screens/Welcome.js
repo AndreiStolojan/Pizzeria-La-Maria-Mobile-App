@@ -14,7 +14,7 @@ import { StatusBar } from "expo-status-bar";
 
 
 
-const Login = () => {
+const Welcome = ({navigation}) => {
  
   return (
     <>
@@ -32,7 +32,7 @@ const Login = () => {
             />
 
             
-            <StyledButton style={{ width: 260 }} onPress={() => {}}>
+            <StyledButton style={{ width: 260 }} onPress={() => {navigation.navigate('Login')}}>
               <ButtonText style={{  fontSize: 22}}>LogOut</ButtonText>
             </StyledButton>
           </StyledFormArea>
@@ -42,4 +42,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Welcome;

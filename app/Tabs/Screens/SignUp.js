@@ -55,7 +55,7 @@ const MyTextInput = ({
   );
 };
 
-const SignUp = () => {
+const SignUp = ({ navigation }) => {
   const [hidePassword, setHidePassword] = useState(true);
   const [show, setShow] = useState(false);
 
@@ -71,6 +71,7 @@ const SignUp = () => {
             initialValues={{ fullName: "", email: "", password: "" }}
             onSubmit={(values) => {
               console.log(values);
+              navigation.navigate("Welcome");
             }}
           >
             {({ handleChange, handleBlur, handleSubmit, values }) => (
@@ -144,10 +145,11 @@ const SignUp = () => {
                 >
                   <Text style={{ color: "white", fontSize: 18, margin: 10 }}>
                     Aveti deja un cont?
-                    <TextLink style={{ marginLeft: 5 }}>
-                      <TouchableOpacity>
-                        <TextLinkContent>Login</TextLinkContent>
-                      </TouchableOpacity>
+                    <TextLink
+                      style={{ marginLeft: 5 }}
+                      onPress={() => navigation.navigate("Login")}
+                    >
+                      <TextLinkContent>Login</TextLinkContent>
                     </TextLink>
                   </Text>
                 </ExtraView>
