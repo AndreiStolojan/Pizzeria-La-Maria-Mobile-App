@@ -1,18 +1,14 @@
-import * as React from "react";
+import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
-import Comanda from "./Screens/Comanda";
-import Rezervari from "./Screens/Rezervari";
-import Login from './Screens/Login'
-import { useState } from "react";
-import { Image } from "react-native";
+import ComandaScreen from "./Screens/Comanda";
+import RezervariScreen from "./Screens/Rezervari";
+import { Image, View } from "react-native";
 import icons from "./../../constants/icons";
 
 const Tab = createBottomTabNavigator();
 
 function Navigation() {
-  const [isHeartPressed, setIsHeartPressed] = useState(false);
-
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -23,9 +19,7 @@ function Navigation() {
             if (route.name === "Comanda") {
               iconName = focused ? icons.search : icons.search;
             } else if (route.name === "Rezervari") {
-              iconName = isHeartPressed ? icons.heart : icons.heart;
-            }else if(route.name === "Profil"){
-              iconName = focused? icons.menu : icons.menu;
+              iconName = focused ? icons.heart : icons.heart;
             }
 
             return (
@@ -35,7 +29,7 @@ function Navigation() {
               />
             );
           },
-          tabBarActiveTintColor: "#064B52", //culoarea rems
+          tabBarActiveTintColor: "red",
           tabBarInactiveTintColor: "black",
           tabBarLabelStyle: {
             fontSize: 17,
@@ -45,22 +39,11 @@ function Navigation() {
           headerTitle: ' '
         })}
         tabBarStyle={{
-          // Mutăm stilurile de tab în screenOptions
           display: "flex",
         }}
       >
-        <Tab.Screen name="Comanda" component={Comanda} />
-        <Tab.Screen
-          name="Rezervari"
-          component={Rezervari}
-          listeners={{
-            tabPress: () => {
-              setIsHeartPressed(true);
-            },
-          }}
-        />
-        <Tab.Screen name="Profil" component={Login} />
-        
+        <Tab.Screen name="Comanda" component={ComandaScreen} />
+        <Tab.Screen name="Rezervari" component={RezervariScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );

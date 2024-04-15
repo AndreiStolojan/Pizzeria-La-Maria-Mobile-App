@@ -24,6 +24,7 @@ import { Octicons } from "@expo/vector-icons";
 import { Colors } from "../../../styles";
 import KeyboardAvoidingWrapper from "../Components/KeyboardAvoidingWrapper";
 
+
 const { rems_color, darkLight, primary } = Colors;
 
 const MyTextInput = ({
@@ -64,7 +65,7 @@ const SignUp = ({ navigation }) => {
       <StyledContainer>
         <StatusBar style="light" />
         <InnerContainer>
-          <PageTitle>Create Your Account </PageTitle>
+          <PageTitle>Creează-ți contul!</PageTitle>
           <SubTitle></SubTitle>
 
           <Formik
@@ -86,9 +87,9 @@ const SignUp = ({ navigation }) => {
                   value={values.fullName}
                 />
                 <MyTextInput
-                  label1="Email address"
+                  label1="Adresa de email"
                   icon="mail"
-                  placeholder="rems@gmail.com"
+                  placeholder="pizzerialamaria@gmail.com"
                   placeholderTextColor={darkLight}
                   onChangeText={handleChange("email")}
                   onBlur={handleBlur("email")}
@@ -96,7 +97,7 @@ const SignUp = ({ navigation }) => {
                   keyboardType="email-address"
                 />
                 <MyTextInput
-                  label1="Password"
+                  label1="Parola"
                   icon="lock"
                   placeholder="*********"
                   placeholderTextColor={darkLight}
@@ -109,7 +110,7 @@ const SignUp = ({ navigation }) => {
                   setHidePassword={setHidePassword}
                 />
                 <MyTextInput
-                  label1="Confirm Password"
+                  label1="Confirmarea Parolei"
                   icon="lock"
                   placeholder="*********"
                   placeholderTextColor={darkLight}
@@ -132,7 +133,7 @@ const SignUp = ({ navigation }) => {
                   }}
                 >
                   <StyledButton style={{ width: 200 }} onPress={handleSubmit}>
-                    <ButtonText>Create!</ButtonText>
+                    <ButtonText>Creează</ButtonText>
                   </StyledButton>
                 </View>
 
@@ -149,7 +150,7 @@ const SignUp = ({ navigation }) => {
                       style={{ marginLeft: 5 }}
                       onPress={() => navigation.navigate("Login")}
                     >
-                      <TextLinkContent>Login</TextLinkContent>
+                      <TextLinkContent>  Conectați-vă</TextLinkContent>
                     </TextLink>
                   </Text>
                 </ExtraView>

@@ -1,16 +1,14 @@
 import React from 'react';
 import { ScrollView, View, Text, StyleSheet, Dimensions, ImageBackground } from 'react-native';
 
-
 const { height, width } = Dimensions.get('window');
 
 function Comanda() {
   return (
     <ScrollView nestedScrollEnabled={true} style={styles.scrollView}>
-      <ImageBackground source={require('../../../assets/images/360_F_563062991_F2AEcsJ0dwAkIx07k2su58MAQTXi3rDU.jpg')} style={styles.backgroundImage}>
+      <ImageBackground style={styles.backgroundImage}>
         <View style={styles.container}>
-          <Text>Da ma da pagina de comenzi</Text>
-          {/* Aici poți adăuga mai mult conținut */}
+          <Text style={styles.text}>Da, mă duc la pagina de comenzi</Text>
         </View>
       </ImageBackground>
     </ScrollView>
@@ -33,6 +31,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: width,
     height: height,
+  },
+  text: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: 'black', // Culoare textului
   },
 });
 

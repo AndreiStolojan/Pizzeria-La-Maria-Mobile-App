@@ -19,11 +19,12 @@ import {
 } from "../../../styles";
 import { StatusBar } from "expo-status-bar";
 import { Formik } from "formik";
-import { View, Text } from "react-native";
+import { View, Text, ActivityIndicator} from "react-native";
 import { Octicons } from "@expo/vector-icons";
 import { Colors } from "../../../styles";
 import { FontAwesome } from "@expo/vector-icons";
 import KeyboardAvoidingWrapper from "../Components/KeyboardAvoidingWrapper";
+import axios from "axios";
 
 const { rems_color, darkLight, primary } = Colors;
 
@@ -55,8 +56,32 @@ const MyTextInput = ({
   );
 };
 
-const Login = ({navigation}) => {
+const Login = ({ navigation }) => {
   const [hidePassword, setHidePassword] = useState(true);
+  const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState(null);
+
+  const handleLogin = async (credentials, setSubmitting) => {
+    setMessage(null);
+
+    try {
+      const response = await axios.post('https://pizzeria-la-maria-heroku.herokuapp.com/user/signin', credentials);
+      const { message, status, data } = response.data;
+
+      if (status !== 'SUCCESS') {
+        setMessage(message);
+        setMessageType(status);
+      } else {
+        navigation.navigate('Welcome', { ...data[0] });
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setMessage("Verifica conexiunea la internet!");
+      setMessageType('FAILED');
+    }
+
+    setSubmitting(false);
+  };
 
   return (
     <KeyboardAvoidingWrapper>
@@ -65,23 +90,27 @@ const Login = ({navigation}) => {
         <InnerContainer>
           <PageLogo
             resizeMode="cover"
-            source={require("../../../assets/images/rems_logo.jpg")}
+            source={require("../../../assets/images/pizzerie_logo_copy.png")}
           />
-          <PageTitle>Login to your account </PageTitle>
-          <SubTitle>Account Registration</SubTitle>
+          <SubTitle>Înregistrați-vă</SubTitle>
           <Formik
             initialValues={{ email: "", password: "" }}
-            onSubmit={(values) => {
-              console.log(values);
-              navigation.navigate("Welcome")
+            onSubmit={(values, { setSubmitting }) => {
+              if (values.email === '' || values.password === '') {
+                setMessage('Completeaza toate campurile!');
+                setMessageType('FAILED');
+                setSubmitting(false);
+              } else {
+                handleLogin(values, setSubmitting);
+              }
             }}
           >
-            {({ handleChange, handleBlur, handleSubmit, values }) => (
+            {({ handleChange, handleBlur, handleSubmit, values, isSubmitting }) => (
               <StyledFormArea>
                 <MyTextInput
-                  label1="Email address"
+                  label1="Adresa de email"
                   icon="mail"
-                  placeholder="rems@gmail.com"
+                  placeholder="pizzerialamaria@gmail.com"
                   placeholderTextColor={darkLight}
                   onChangeText={handleChange("email")}
                   onBlur={handleBlur("email")}
@@ -89,7 +118,7 @@ const Login = ({navigation}) => {
                   keyboardType="email-address"
                 />
                 <MyTextInput
-                  label1="Password"
+                  label1="Parola"
                   icon="lock"
                   placeholder="*********"
                   placeholderTextColor={darkLight}
@@ -101,16 +130,19 @@ const Login = ({navigation}) => {
                   hidePassword={hidePassword}
                   setHidePassword={setHidePassword}
                 />
-                <MsgBox>...</MsgBox>
+                {message && <MsgBox type={messageType}>{message}</MsgBox>}
                 <View
                   style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
                   }}
                 >
-                  <StyledButton style={{ width: 150 }} onPress={handleSubmit}>
-                    <ButtonText>Login</ButtonText>
-                  </StyledButton>
+                  {!isSubmitting && <StyledButton style={{ width: 150 }} onPress={handleSubmit}>
+                    <ButtonText>Conectați-vă</ButtonText>
+                  </StyledButton>}
+                  {isSubmitting && <StyledButton style={{ width: 150 }} disabled={true} >
+                    <ActivityIndicator size="large" color={primary} />
+                  </StyledButton>}
                   <StyledButton
                     google={true}
                     style={{ width: 150 }}
@@ -128,9 +160,12 @@ const Login = ({navigation}) => {
                   }}
                 >
                   <Text style={{ color: "white", fontSize: 18, margin: 10 }}>
-                    Nu aveti un cont?
-                    <TextLink style={{ marginLeft: 5 }} onPress={() => navigation.navigate("SignUp")} >
-                      <TextLinkContent>SignUp</TextLinkContent>
+                    Nu aveți un cont?
+                    <TextLink
+                      style={{ marginLeft: 5 }}
+                      onPress={() => navigation.navigate("SignUp")}
+                    >
+                      <TextLinkContent>  Înregistrați-vă</TextLinkContent>
                     </TextLink>
                   </Text>
                 </ExtraView>
