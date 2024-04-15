@@ -5,7 +5,7 @@ import { Colors } from '../../../styles';
 import Login from '../Screens/Login';
 import SignUp from '../Screens/SignUp';
 import Welcome from '../Screens/Welcome';
-import { ImageBackground } from 'react-native';
+
 
 const Stack = createStackNavigator();
 const {primary, tertiary, rems_color} = Colors;
@@ -15,7 +15,7 @@ const RootStack = () => {
       <NavigationContainer>
         <Stack.Navigator 
             screenOptions={{
-                headerStyled: {backgrounfColor: 'transparent'
+                headerStyled: {backgroundColor: 'transparent'
                 },
                 headerTintColor: 'transparent',
                 headerTransparent: true,
@@ -36,7 +36,12 @@ const RootStack = () => {
             // }}
           />
           <Stack.Screen name="SignUp" component={SignUp} />
-          <Stack.Screen options={{headerTintColor: primary}} name="Welcome" component={Welcome} />
+          <Stack.Screen name="Welcome" component={Welcome} options={{
+              headerTransparent: true,
+              headerTitleStyle: {
+                color: "transparent", // Face titlul transparent
+              },
+            }}/>
         </Stack.Navigator>
       </NavigationContainer>
     );

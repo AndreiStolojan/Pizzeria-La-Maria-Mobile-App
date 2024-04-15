@@ -1,4 +1,5 @@
-import styled from "styled-components/native";
+import styled from 'styled-components/native';
+
 import { View, Text, Image, TextInput, TouchableOpacity } from "react-native";
 import Constants from "expo-constants";
 import { version } from "react";
@@ -12,8 +13,9 @@ export const Colors = {
   darkLight: "#9CA3AF",
   brand: "#6D28D9",
   green: "#10B981",
-  red: "#EF4444",
-  rems_color: "#064B52",
+  red: "#FF0000",
+  red_logo: "#8B0000",
+  book_antiqua: "#636363",
   gri: "#6EB5D2",
 };
 
@@ -25,14 +27,15 @@ const {
   brand,
   green,
   red,
-  rems_color,
+  red_logo,
   gri,
+  book_antiqua,
 } = Colors;
 
 export const StyledContainer = styled.View`
   flex: 1;
   padding: 25px;
-  background-color: ${rems_color};
+  background-color: ${red_logo};
   padding-top: ${StatusBarHeight + 30}px;
 `;
 
@@ -43,8 +46,8 @@ export const InnerContainer = styled.View`
 `;
 
 export const PageLogo = styled.Image`
-  width: 250px;
-  height: 200px;
+  width: 260px;
+  height: 249px;
 `;
 
 export const PageTitle = styled.Text`
@@ -52,6 +55,9 @@ export const PageTitle = styled.Text`
   text-align: center;
   font-weight: bold;
   color: ${primary};
+  margin: 20px;
+  
+
 
   ${(props) => props.welcome && `
     font-size: 35px;
@@ -111,7 +117,7 @@ export const RightIcon = styled.TouchableOpacity`
 
 export const StyledButton = styled.TouchableOpacity`
   padding: 15px;
-  background-color: ${(props) => (props.google ? "#4285F4" : "#6EB5D2")};
+  background-color: ${(props) => (props.google ? "#4285F4" : "#D2B48C")};
   justify-content: center;
   border-radius: 25px; /* Marginile butonului rotunjite */
   align-items: center;
@@ -131,9 +137,9 @@ export const ButtonText = styled.Text`
   color: ${(props) =>
     props.google
       ? "#FFFFFF"
-      : "#FFFFFF"}; /* Text alb pentru butonul Google sau culoarea ta */
-  font-size: 18px; /* Mărimea fontului */
-  font-weight: bold; /* Textul bold */
+      : "#FFFFFF"}; 
+  font-size: 18px; 
+  font-weight: bold; 
 
   padding: ${(props) =>
     props.google
@@ -144,8 +150,12 @@ export const ButtonText = styled.Text`
 export const MsgBox = styled.Text`
   text-align: center;
   font-size: 13px;
-  color: ${primary};
+  color: ${props => props.type === 'SUCCES' ? green : "#FFF700"};
+  
 `;
+
+
+
 export const ExtraView = styled.View`
   justify-content: center;
   flex-direction: row;
@@ -174,27 +184,26 @@ export const WelcomeContainer = styled(InnerContainer)`
     padding: 25px;
     padding-top: 10px;
     justify-content: center;
-    background-color: ${rems_color};
+    background-color: ${red_logo};
     flex: 1;
-    background-color: ${rems_color};
+    background-color: ${red_logo};
     
 `
 
 
 export const Avatar = styled.Image`
-    width: 100px;
-    height: 100px;
+    width: 110px; /* Am mărit lățimea */
+    height: 110px; /* Am mărit înălțimea */
     margin: auto;
-    border-radius: 50px;
+    border-radius: 55px; /* Am mărit raza pentru a se potrivi noilor dimensiuni */
     border-width: 2px;
     border-color: ${secondary}; /* Corectare aici */
-    margin-bottom: 10px;
+    margin-bottom: px;
     margin-top: 10px;
 `;
 
 
 export const WelcomeImage = styled.Image`
-    height: 50%;
-    width: 140%
-    
-`
+    height: 40%;
+    width: 130%;
+`;
