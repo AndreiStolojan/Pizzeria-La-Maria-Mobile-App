@@ -52,7 +52,7 @@ const MenuBauturi = () => {
         {bauturi.map((bautura, index) => (
           <View style={styles.item} key={index}>
             <Image
-              //source={require('./assets/coffee_image.jpg')} // Schimbă imaginea în funcție de băutura curentă
+              source={require('../../../assets/images/cafea.jpg')} // Schimbă imaginea în funcție de băutura curentă
               style={styles.itemImage}
             />
             <View style={styles.itemDetails}>
