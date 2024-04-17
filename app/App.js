@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import NavigationTab from './Tabs/Navigation';
 
 import RootStack from './Tabs/Navigators/RootStack';
+import Login from './Tabs/Screens/Login';
 
 
 export default function App() {

@@ -1,32 +1,32 @@
 import React, { useState } from "react";
+import { Text } from "react-native";
 import {
   StyledContainer,
   InnerContainer,
   PageLogo,
-  PageTitle,
-  StyledFormArea,
   SubTitle,
-  LeftIcon,
-  ExtraView,
+  StyledFormArea,
   StyledInputLabel,
-  MsgBox,
   StyledTextInput,
+  LeftIcon,
   RightIcon,
+  MsgBox,
   StyledButton,
   ButtonText,
+  Colors,
+  ExtraView,
   TextLink,
   TextLinkContent,
 } from "../../../styles";
 import { StatusBar } from "expo-status-bar";
 import { Formik } from "formik";
-import { View, Text, ActivityIndicator} from "react-native";
-import { Octicons } from "@expo/vector-icons";
-import { Colors } from "../../../styles";
-import { FontAwesome } from "@expo/vector-icons";
+import { View, ActivityIndicator } from "react-native";
+import { Octicons, FontAwesome } from "@expo/vector-icons";
 import KeyboardAvoidingWrapper from "../Components/KeyboardAvoidingWrapper";
-import axios from "axios";
+import { auth } from "../../../firebase";
+import { useNavigation } from "@react-navigation/native";
 
-const { rems_color, darkLight, primary } = Colors;
+const { rems_color, darkLight, primary, danger } = Colors;
 
 const MyTextInput = ({
   label1,
@@ -56,31 +56,28 @@ const MyTextInput = ({
   );
 };
 
-const Login = ({ navigation }) => {
+const Login = () => {
   const [hidePassword, setHidePassword] = useState(true);
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState(null);
+  const navigation = useNavigation();
 
-  const handleLogin = async (credentials, setSubmitting) => {
-    setMessage(null);
+  const handleLogin = (values, setSubmitting) => {
+    const { email, password } = values;
 
-    try {
-      const response = await axios.post('https://pizzeria-la-maria-heroku.herokuapp.com/user/signin', credentials);
-      const { message, status, data } = response.data;
-
-      if (status !== 'SUCCESS') {
-        setMessage(message);
-        setMessageType(status);
-      } else {
-        navigation.navigate('Welcome', { ...data[0] });
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setMessage("Verifica conexiunea la internet!");
-      setMessageType('FAILED');
-    }
-
-    setSubmitting(false);
+    auth.signInWithEmailAndPassword(email, password)
+      .then(() => {
+        console.log("Autentificarea a fost realizata cu emailul: ",email)
+        navigation.navigate("Welcome"); // Navigare către pagina de bun venit
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setMessage("Adresa de email sau parola sunt incorecte");
+        setMessageType("FAILED");
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
   };
 
   return (
@@ -92,13 +89,13 @@ const Login = ({ navigation }) => {
             resizeMode="cover"
             source={require("../../../assets/images/pizzerie_logo_copy.png")}
           />
-          <SubTitle>Înregistrați-vă</SubTitle>
+          <SubTitle>Conectați-vă</SubTitle>
           <Formik
             initialValues={{ email: "", password: "" }}
             onSubmit={(values, { setSubmitting }) => {
-              if (values.email === '' || values.password === '') {
-                setMessage('Completeaza toate campurile!');
-                setMessageType('FAILED');
+              if (values.email === "" || values.password === "") {
+                setMessage("Completeaza toate campurile!");
+                setMessageType("FAILED");
                 setSubmitting(false);
               } else {
                 handleLogin(values, setSubmitting);
@@ -137,16 +134,14 @@ const Login = ({ navigation }) => {
                     justifyContent: "space-between",
                   }}
                 >
-                  {!isSubmitting && <StyledButton style={{ width: 150 }} onPress={handleSubmit}>
+                  <StyledButton style={{ width: 150 }} onPress={handleSubmit} disabled={isSubmitting}>
                     <ButtonText>Conectați-vă</ButtonText>
-                  </StyledButton>}
-                  {isSubmitting && <StyledButton style={{ width: 150 }} disabled={true} >
-                    <ActivityIndicator size="large" color={primary} />
-                  </StyledButton>}
+                  </StyledButton>
                   <StyledButton
                     google={true}
                     style={{ width: 150 }}
                     onPress={handleSubmit}
+                    disabled={isSubmitting}
                   >
                     <FontAwesome name="google" color={primary} size={25} />
                     <ButtonText google={true}>Sign In</ButtonText>
@@ -163,7 +158,7 @@ const Login = ({ navigation }) => {
                     Nu aveți un cont?
                     <TextLink
                       style={{ marginLeft: 5 }}
-                      onPress={() => navigation.navigate("SignUp")}
+                      onPress={() => navigation.replace("SignUp")}
                     >
                       <TextLinkContent>  Înregistrați-vă</TextLinkContent>
                     </TextLink>

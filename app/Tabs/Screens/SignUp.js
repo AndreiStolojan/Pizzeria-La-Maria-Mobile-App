@@ -23,9 +23,10 @@ import { View, Text, Settings, TouchableOpacity } from "react-native";
 import { Octicons } from "@expo/vector-icons";
 import { Colors } from "../../../styles";
 import KeyboardAvoidingWrapper from "../Components/KeyboardAvoidingWrapper";
+import { auth } from '../../../firebase'; // Importăm metoda de autentificare din firebase
+import { useNavigation } from "@react-navigation/native"; // Importăm hook-ul useNavigation
 
-
-const { rems_color, darkLight, primary } = Colors;
+const { rems_color, darkLight, primary, danger } = Colors;
 
 const MyTextInput = ({
   label1,
@@ -33,6 +34,8 @@ const MyTextInput = ({
   isPassword,
   hidePassword,
   setHidePassword,
+  setValue,
+  value,
   ...props
 }) => {
   return (
@@ -41,7 +44,11 @@ const MyTextInput = ({
         <Octicons name={icon} size={30} color={rems_color} />
       </LeftIcon>
       <StyledInputLabel style={{ color: primary }}>{label1}</StyledInputLabel>
-      <StyledTextInput {...props} />
+      <StyledTextInput
+        {...props}
+        onChangeText={text => setValue(text)}
+        value={value}
+      />
 
       {isPassword && (
         <RightIcon onPress={() => setHidePassword(!hidePassword)}>
@@ -56,9 +63,52 @@ const MyTextInput = ({
   );
 };
 
-const SignUp = ({ navigation }) => {
+const SignUp = () => {
   const [hidePassword, setHidePassword] = useState(true);
-  const [show, setShow] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [error, setError] = useState('');
+  const navigation = useNavigation(); // Inițializăm hook-ul useNavigation pentru a obține obiectul de navigare
+
+  const handleSignUp = () => {
+    // Verificați dacă toate câmpurile sunt completate
+    if (!email || !password || !confirmPassword || !fullName) {
+      setError('Toate câmpurile sunt obligatorii!');
+      return;
+    }
+  
+    // Verificați dacă parolele coincid
+    if (password !== confirmPassword) {
+      setError('Parolele nu se potrivesc!');
+      return;
+    }
+  
+    // Creați utilizatorul în Firebase cu numele complet inclus
+    auth.createUserWithEmailAndPassword(email, password)
+      .then(userCredentials => {
+        const user = userCredentials.user;
+        
+        // Adăugați numele complet în obiectul de date al utilizatorului
+        return user.updateProfile({
+          displayName: fullName
+        });
+      })
+      .then(() => {
+        console.log("Utilizatorul a fost înregistrat cu succes cu emailul:", email, "!");
+        navigation.navigate("Welcome");
+        // Aici poți adăuga redirecționarea către pagina de bun venit sau alte acțiuni
+      })
+      .catch((error) => {
+        if (error.code === 'auth/email-already-in-use') {
+          setError('Adresa de email este deja înregistrată!');
+        } else {
+          setError(error.message);
+        }
+      });
+  };
+  
 
   return (
     <KeyboardAvoidingWrapper>
@@ -69,31 +119,29 @@ const SignUp = ({ navigation }) => {
           <SubTitle></SubTitle>
 
           <Formik
-            initialValues={{ fullName: "", email: "", password: "" }}
+            initialValues={{ fullName: "", email: "", password: "", confirmPassword: "" }}
             onSubmit={(values) => {
               console.log(values);
-              navigation.navigate("Welcome");
             }}
           >
             {({ handleChange, handleBlur, handleSubmit, values }) => (
               <StyledFormArea>
+                {error ? <MsgBox type="error">{error}</MsgBox> : null}
                 <MyTextInput
                   label1="Nume Prenume"
                   icon="person"
                   placeholder="Stolojan Andrei"
                   placeholderTextColor={darkLight}
-                  onChangeText={handleChange("fullName")}
-                  onBlur={handleBlur("fullName")}
-                  value={values.fullName}
+                  setValue={setFullName}
+                  value={fullName}
                 />
                 <MyTextInput
                   label1="Adresa de email"
                   icon="mail"
                   placeholder="pizzerialamaria@gmail.com"
                   placeholderTextColor={darkLight}
-                  onChangeText={handleChange("email")}
-                  onBlur={handleBlur("email")}
-                  value={values.email}
+                  setValue={setEmail}
+                  value={email}
                   keyboardType="email-address"
                 />
                 <MyTextInput
@@ -101,9 +149,8 @@ const SignUp = ({ navigation }) => {
                   icon="lock"
                   placeholder="*********"
                   placeholderTextColor={darkLight}
-                  onChangeText={handleChange("password")}
-                  onBlur={handleBlur("password")}
-                  value={values.password}
+                  setValue={setPassword}
+                  value={password}
                   secureTextEntry={hidePassword}
                   isPassword={true}
                   hidePassword={hidePassword}
@@ -114,25 +161,23 @@ const SignUp = ({ navigation }) => {
                   icon="lock"
                   placeholder="*********"
                   placeholderTextColor={darkLight}
-                  onChangeText={handleChange("confirmPassword")}
-                  onBlur={handleBlur("confirmPassword")}
-                  value={values.confirmPassword}
+                  setValue={setConfirmPassword}
+                  value={confirmPassword}
                   secureTextEntry={hidePassword}
                   isPassword={true}
                   hidePassword={hidePassword}
                   setHidePassword={setHidePassword}
                 />
-                <MsgBox>...</MsgBox>
                 <View
                   style={{
                     flex: 1,
                     justifyContent: "center",
                     alignItems: "center",
-                    marginTop: 40,
-                    marginBottom: 20,
+                    marginTop: 10,
+                    marginBottom: 0,
                   }}
                 >
-                  <StyledButton style={{ width: 200 }} onPress={handleSubmit}>
+                  <StyledButton style={{ width: 200 }} onPress={handleSignUp}>
                     <ButtonText>Creează</ButtonText>
                   </StyledButton>
                 </View>
@@ -147,8 +192,7 @@ const SignUp = ({ navigation }) => {
                   <Text style={{ color: "white", fontSize: 18, margin: 10 }}>
                     Aveti deja un cont?
                     <TextLink
-                      style={{ marginLeft: 5 }}
-                      onPress={() => navigation.navigate("Login")}
+                      onPress={() => navigation.replace("Login")}
                     >
                       <TextLinkContent>  Conectați-vă</TextLinkContent>
                     </TextLink>
