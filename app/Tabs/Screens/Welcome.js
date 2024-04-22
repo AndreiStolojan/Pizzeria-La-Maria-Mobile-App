@@ -8,22 +8,22 @@ import {
   ButtonText,
   WelcomeContainer,
   Avatar,
-  WelcomeImage,
 } from "../../../styles";
 import { StatusBar } from "expo-status-bar";
-import { auth } from "../../../firebase";
 import { useNavigation } from "@react-navigation/native";
-
+import { auth } from "../../../firebase";
 const Welcome = () => {
-  const navigation=useNavigation()
+  const navigation = useNavigation();
 
   const handleSignOut = () => {
-    auth.signOut()
-    .then(() => {
-      navigation.replace("Login")
+    // Implementarea funcției handleSignOut pentru deconectare
+    console.log("Handle Sign Out");
+  };
 
-    }).catch(error => alert(error.message))
-  }
+  const handleGoToComanda = () => {
+    // Navigare către pagina de comandă
+    navigation.navigate("Comanda");
+  };
 
   return (
     <>
@@ -33,6 +33,7 @@ const Welcome = () => {
           <PageTitle welcome={true}>
             Te-ai alăturat familiei La Maria!
           </PageTitle>
+          {/* Afișează numele utilizatorului conectat */}
           <SubTitle>{auth.currentUser?.displayName}</SubTitle>
           <SubTitle welcome={true}>{auth.currentUser?.email}</SubTitle>
           <StyledFormArea>
@@ -41,11 +42,16 @@ const Welcome = () => {
               resizeMode="cover"
               source={require("../../../assets/images/pizzerie_logo_copy.png")}
             />
+            {/* Buton pentru deconectare */}
+            <StyledButton style={{ width: 260 }} onPress={handleSignOut}>
+              <ButtonText style={{ fontSize: 22 }}>LogOut</ButtonText>
+            </StyledButton>
+            {/* Buton pentru navigare către pagina de comandă */}
             <StyledButton
               style={{ width: 260 }}
-              onPress={handleSignOut}
+              onPress={handleGoToComanda}
             >
-              <ButtonText style={{ fontSize: 22 }}>LogOut</ButtonText>
+              <ButtonText style={{ fontSize: 22 }}>Go to Comanda</ButtonText>
             </StyledButton>
           </StyledFormArea>
         </WelcomeContainer>
