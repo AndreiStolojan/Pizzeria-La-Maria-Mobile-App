@@ -26,7 +26,7 @@ import KeyboardAvoidingWrapper from "../Components/KeyboardAvoidingWrapper";
 import { auth } from '../../../firebase'; // Importăm metoda de autentificare din firebase
 import { useNavigation } from "@react-navigation/native"; // Importăm hook-ul useNavigation
 
-const { rems_color, darkLight, primary, danger } = Colors;
+const { red_logo, darkLight, primary, danger } = Colors;
 
 const MyTextInput = ({
   label1,
@@ -41,7 +41,7 @@ const MyTextInput = ({
   return (
     <View>
       <LeftIcon>
-        <Octicons name={icon} size={30} color={rems_color} />
+        <Octicons name={icon} size={30} color={red_logo} />
       </LeftIcon>
       <StyledInputLabel style={{ color: primary }}>{label1}</StyledInputLabel>
       <StyledTextInput
@@ -55,7 +55,7 @@ const MyTextInput = ({
           <Octicons
             name={hidePassword ? "eye-closed" : "eye"}
             size={25}
-            color={rems_color}
+            color={red_logo}
           />
         </RightIcon>
       )}

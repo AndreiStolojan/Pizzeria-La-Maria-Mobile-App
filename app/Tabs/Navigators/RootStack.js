@@ -7,12 +7,17 @@ import Rezervari from "../Screens/Rezervari";
 import Login from "../Screens/Login";
 import SignUp from "../Screens/SignUp";
 import Welcome from "../Screens/Welcome";
-import Icon from 'react-native-vector-icons/FontAwesome'; // Importă componenta Icon
+import Profil from "../Screens/Profil";
+import Icon from 'react-native-vector-icons/MaterialIcons';; // Importă componenta Icon
 import { Image, TouchableOpacity } from "react-native";
 import icons from "../../../constants/icons";
+import { Colors } from '../../../styles';
+// import Icon from 'react-native-vector-icons/MaterialIcons';
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+const { red_logo } = Colors;
 
 const RootStack = () => {
   return (
@@ -29,13 +34,14 @@ const RootStack = () => {
         }}
         initialRouteName="Main"
       >
-        <Stack.Screen name="LoginStack" component={LoginStack} options={{ headerShown: false }} />
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="SignUp" component={SignUp} />
         <Stack.Screen name="Welcome" component={Welcome} />
-        <Stack.Screen
-          name="Main"
-          options={{ headerShown: false }}
-        >
+        <Stack.Screen name="Main" options={{ headerShown: false }}>
           {({ navigation }) => (
             <Tab.Navigator
               screenOptions={({ route }) => ({
@@ -43,23 +49,33 @@ const RootStack = () => {
                   let iconName;
 
                   if (route.name === "Comanda") {
-                    iconName = focused ? icons.search : icons.search;
+                    iconName = focused ? icons.pizza : icons.pizza; // Iconita pentru Comanda
                   } else if (route.name === "Rezervari") {
-                    iconName = focused ? icons.heart : icons.heart;
+                    iconName = focused ? icons.reservation : icons.reservation; // Iconita pentru Rezervari
                   }
 
+                  
                   return (
                     <Image
                       source={iconName}
-                      style={{ width: size, height: size, tintColor: color }}
+                      style={{ width: 33, height: 33, tintColor: color }}
                     />
                   );
                 },
-                tabBarActiveTintColor: "red",
+                tabBarActiveTintColor: red_logo,
                 tabBarInactiveTintColor: "black",
                 tabBarLabelStyle: {
-                  fontSize: 17,
-                  fontWeight: "bold",
+                  display: "none",
+                },
+                
+                tabBarStyle: {
+                  backgroundColor: "#ffffff", // Setează culoarea fundalului barei de navigare a tabului
+                  borderTopWidth: 0, // Elimină linia de sus a barei de navigare a tabului
+                  position: "absolute", // Poziționează bara de navigare deasupra conținutului
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  elevation: 0, // Elimină umbra Android
                 },
                 headerTransparent: true,
                 headerTitle: " ",
@@ -68,10 +84,11 @@ const RootStack = () => {
                   return (
                     <TouchableOpacity
                       style={{ marginRight: 20 }}
-                      onPress={() => navigation.navigate("LoginStack")}
+                      onPress={() => navigation.navigate("Login")}
                     >
                       {/* Utilizează componenta Icon */}
-                      <Icon name="user" size={24} color="black" />
+                      <Icon name="person" size={33} color="black" style={{marginTop: 15}} />
+
                     </TouchableOpacity>
                   );
                 },
@@ -82,6 +99,9 @@ const RootStack = () => {
             >
               <Tab.Screen name="Comanda" component={Comanda} />
               <Tab.Screen name="Rezervari" component={Rezervari} />
+              <Tab.Screen name="Profil" component={Profil} />
+              
+              
             </Tab.Navigator>
           )}
         </Stack.Screen>
