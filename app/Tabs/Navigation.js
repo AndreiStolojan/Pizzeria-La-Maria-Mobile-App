@@ -1,8 +1,8 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
-import ComandaScreen from "./Screens/Comanda";
-import RezervariScreen from "./Screens/Rezervari";
+import Comanda from "./Screens/Comanda";
+import Rezervari from "./Screens/Rezervari";
 import { Image, View } from "react-native";
 import icons from "./../../constants/icons";
 
@@ -42,8 +42,8 @@ function Navigation() {
           display: "flex",
         }}
       >
-        <Tab.Screen name="Comanda" component={ComandaScreen} />
-        <Tab.Screen name="Rezervari" component={RezervariScreen} />
+        <Tab.Screen name="Comanda" component={Comanda} />
+        <Tab.Screen name="Rezervari" component={Rezervari} />
       </Tab.Navigator>
     </NavigationContainer>
   );
