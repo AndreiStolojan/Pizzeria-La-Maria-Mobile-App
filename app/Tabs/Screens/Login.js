@@ -26,7 +26,7 @@ import KeyboardAvoidingWrapper from "../Components/KeyboardAvoidingWrapper";
 import { auth } from "../../../firebase";
 import { useNavigation } from "@react-navigation/native";
 
-const { rems_color, darkLight, primary, danger } = Colors;
+const { red_logo, darkLight, primary, danger } = Colors;
 
 const MyTextInput = ({
   label1,
@@ -39,7 +39,7 @@ const MyTextInput = ({
   return (
     <View>
       <LeftIcon>
-        <Octicons name={icon} size={30} color={rems_color} />
+        <Octicons name={icon} size={30} color={red_logo} />
       </LeftIcon>
       <StyledInputLabel style={{ color: primary }}>{label1}</StyledInputLabel>
       <StyledTextInput {...props} placeholder={label1} />
@@ -48,7 +48,7 @@ const MyTextInput = ({
           <Octicons
             name={hidePassword ? "eye-closed" : "eye"}
             size={25}
-            color={rems_color}
+            color={red_logo}
           />
         </RightIcon>
       )}
