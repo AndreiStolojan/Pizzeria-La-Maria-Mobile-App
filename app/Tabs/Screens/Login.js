@@ -68,7 +68,7 @@ const Login = () => {
     auth.signInWithEmailAndPassword(email, password)
       .then(() => {
         console.log("Autentificarea a fost realizata cu emailul: ",email)
-        navigation.navigate("Welcome"); // Navigare către pagina de bun venit
+        navigation.navigate("Profil"); // Navigare către pagina de bun venit
       })
       .catch((error) => {
         console.error("Error:", error);
