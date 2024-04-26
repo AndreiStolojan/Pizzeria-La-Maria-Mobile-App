@@ -201,6 +201,24 @@ export const Avatar = styled.Image`
     margin-bottom: px;
     margin-top: 10px;
 `;
+export const ProfilePictureContainer = styled.View`
+    flex: 1;
+    justify-content: center; /* Afișează iconița în centrul vertical al ecranului */
+    align-items: center; /* Afișează iconița în centrul orizontal al ecranului */
+    margin-top: 15px; /* Spațiu suplimentar de la partea de sus */
+`;
+
+export const ProfilePicture = styled.Image`
+    width: 150px; /* Mărimea nouă pentru lățime */
+    height: 150px; /* Mărimea nouă pentru înălțime */
+    border-radius: 75px; /* Raza nouă pentru a se potrivi noilor dimensiuni */
+    border-width: 4px; /* Grosimea nouă a border-ului */
+    border-color: ${secondary}; /* Culorea border-ului */
+    object-fit: cover; /* Imaginea se va încadra complet în container */
+`;
+
+
+
 
 
 export const WelcomeImage = styled.Image`
