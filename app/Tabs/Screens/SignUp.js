@@ -23,7 +23,7 @@ import { View, Text, Settings, TouchableOpacity } from "react-native";
 import { Octicons } from "@expo/vector-icons";
 import { Colors } from "../../../styles";
 import KeyboardAvoidingWrapper from "../Components/KeyboardAvoidingWrapper";
-import { auth } from '../../../firebase'; // Importăm metoda de autentificare din firebase
+import { auth } from "../../../firebase"; // Importăm metoda de autentificare din firebase
 import { useNavigation } from "@react-navigation/native"; // Importăm hook-ul useNavigation
 
 const { red_logo, darkLight, primary, danger } = Colors;
@@ -46,7 +46,7 @@ const MyTextInput = ({
       <StyledInputLabel style={{ color: primary }}>{label1}</StyledInputLabel>
       <StyledTextInput
         {...props}
-        onChangeText={text => setValue(text)}
+        onChangeText={(text) => setValue(text)}
         value={value}
       />
 
@@ -65,50 +65,57 @@ const MyTextInput = ({
 
 const SignUp = () => {
   const [hidePassword, setHidePassword] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [fullName, setFullName] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [error, setError] = useState("");
+
   const navigation = useNavigation(); // Inițializăm hook-ul useNavigation pentru a obține obiectul de navigare
+  ; // Adăugăm această linie pentru a afișa obiectul navigation în consolă
+  // Inițializăm hook-ul useNavigation pentru a obține obiectul de navigare
 
   const handleSignUp = () => {
     // Verificați dacă toate câmpurile sunt completate
     if (!email || !password || !confirmPassword || !fullName) {
-      setError('Toate câmpurile sunt obligatorii!');
+      setError("Toate câmpurile sunt obligatorii!");
       return;
     }
-  
+
     // Verificați dacă parolele coincid
     if (password !== confirmPassword) {
-      setError('Parolele nu se potrivesc!');
+      setError("Parolele nu se potrivesc!");
       return;
     }
-  
+
     // Creați utilizatorul în Firebase cu numele complet inclus
-    auth.createUserWithEmailAndPassword(email, password)
-      .then(userCredentials => {
+    auth
+      .createUserWithEmailAndPassword(email, password)
+      .then((userCredentials) => {
         const user = userCredentials.user;
-        
+
         // Adăugați numele complet în obiectul de date al utilizatorului
         return user.updateProfile({
-          displayName: fullName
+          displayName: fullName,
         });
       })
       .then(() => {
-        console.log("Utilizatorul a fost înregistrat cu succes cu emailul:", email, "!");
-        navigation.navigate("Welcome");
+        console.log(
+          "Utilizatorul a fost înregistrat cu succes cu emailul:",
+          email,
+          "!"
+        );
+        navigation.replace("Profil");
         // Aici poți adăuga redirecționarea către pagina de bun venit sau alte acțiuni
       })
       .catch((error) => {
-        if (error.code === 'auth/email-already-in-use') {
-          setError('Adresa de email este deja înregistrată!');
+        if (error.code === "auth/email-already-in-use") {
+          setError("Adresa de email este deja înregistrată!");
         } else {
           setError(error.message);
         }
       });
   };
-  
 
   return (
     <KeyboardAvoidingWrapper>
@@ -119,7 +126,12 @@ const SignUp = () => {
           <SubTitle></SubTitle>
 
           <Formik
-            initialValues={{ fullName: "", email: "", password: "", confirmPassword: "" }}
+            initialValues={{
+              fullName: "",
+              email: "",
+              password: "",
+              confirmPassword: "",
+            }}
             onSubmit={(values) => {
               console.log(values);
             }}
@@ -191,10 +203,8 @@ const SignUp = () => {
                 >
                   <Text style={{ color: "white", fontSize: 18, margin: 10 }}>
                     Aveti deja un cont?
-                    <TextLink
-                      onPress={() => navigation.replace("Login")}
-                    >
-                      <TextLinkContent>  Conectați-vă</TextLinkContent>
+                    <TextLink onPress={() => navigation.replace("Login")}>
+                      <TextLinkContent> Conectați-vă</TextLinkContent>
                     </TextLink>
                   </Text>
                 </ExtraView>
