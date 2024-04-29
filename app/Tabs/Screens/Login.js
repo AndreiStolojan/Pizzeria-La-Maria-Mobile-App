@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Text } from "react-native";
 import {
   StyledContainer,
@@ -25,6 +25,10 @@ import { Octicons, FontAwesome } from "@expo/vector-icons";
 import KeyboardAvoidingWrapper from "../Components/KeyboardAvoidingWrapper";
 import { auth } from "../../../firebase";
 import { useNavigation } from "@react-navigation/native";
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+} from "@react-native-google-signin/google-signin";
 
 const { red_logo, darkLight, primary, danger } = Colors;
 
@@ -65,10 +69,11 @@ const Login = () => {
   const handleLogin = (values, setSubmitting) => {
     const { email, password } = values;
 
-    auth.signInWithEmailAndPassword(email, password)
+    auth
+      .signInWithEmailAndPassword(email, password)
       .then(() => {
-        console.log("Autentificarea a fost realizata cu emailul: ",email)
-        navigation.navigate("Profil"); // Navigare către pagina de bun venit
+        console.log("Autentificarea a fost realizata cu emailul: ", email);
+        navigation.replace("Profil"); // Navigare către pagina de bun venit
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -79,6 +84,58 @@ const Login = () => {
         setSubmitting(false);
       });
   };
+
+  // const handleGoogleLogin = async () => {
+  //   try {
+  //     // Inițializarea modulelor Google Sign-In
+  //     await GoogleSignin.hasPlayServices();
+  //     await GoogleSignin.configure({
+  //       webClientId: '997153372756-aujnbpcvmkgkqomcp87ti178rf2e3p53.apps.googleusercontent.com', // ID-ul clientului web din consola Firebase
+  //       offlineAccess: true,
+  //       forceCodeForRefreshToken: true,
+  //     });
+
+  //     // Deschiderea ecranului de autentificare Google
+  //     const userInfo = await GoogleSignin.signIn();
+  //     const googleCredential = auth.GoogleAuthProvider.credential(userInfo.idToken);
+
+  //     // Autentificarea cu credențialele Google
+  //     await auth().signInWithCredential(googleCredential);
+
+  //     console.log('Autentificare cu Google reușită:', userInfo);
+
+  //     // Navigare către pagina de profil sau altă destinație dorită
+  //     navigation.replace("Profil");
+  //   } catch (error) {
+  //     console.error('Eroare la autentificarea cu Google:', error);
+  //   }
+  // };
+
+  const [error, setError] = useState();
+  const [userInfo, setUserInfo] = useState();
+
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: "997153372756-aujnbpcvmkgkqomcp87ti178rf2e3p53.apps.googleusercontent.com",
+    });
+  }, []);
+
+  const signIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const user = await GoogleSignin.signIn();
+      setUserInfo(user);
+      setError();
+    } catch (e) {
+      setError(e);
+    }
+  };
+
+  const logout = () => {
+    setUserInfo();
+    GoogleSignin.revokeAccess();
+    GoogleSignin.signOut()
+  }
 
   return (
     <KeyboardAvoidingWrapper>
@@ -102,7 +159,13 @@ const Login = () => {
               }
             }}
           >
-            {({ handleChange, handleBlur, handleSubmit, values, isSubmitting }) => (
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              values,
+              isSubmitting,
+            }) => (
               <StyledFormArea>
                 <MyTextInput
                   label1="Adresa de email"
@@ -134,17 +197,21 @@ const Login = () => {
                     justifyContent: "space-between",
                   }}
                 >
-                  <StyledButton style={{ width: 150 }} onPress={handleSubmit} disabled={isSubmitting}>
+                  <StyledButton
+                    style={{ width: 150 }}
+                    onPress={handleSubmit}
+                    disabled={isSubmitting}
+                  >
                     <ButtonText>Conectați-vă</ButtonText>
                   </StyledButton>
                   <StyledButton
                     google={true}
                     style={{ width: 150 }}
-                    onPress={handleSubmit}
+                    onPress={signIn}
                     disabled={isSubmitting}
                   >
                     <FontAwesome name="google" color={primary} size={25} />
-                    <ButtonText google={true}>Sign In</ButtonText>
+                    {/* <GoogleSigninButton size={GoogleSigninButton.Size.Standard} color={GoogleSigninButton.Color.Dark} onPress={signIn}/> */}
                   </StyledButton>
                 </View>
                 <ExtraView
@@ -160,7 +227,7 @@ const Login = () => {
                       style={{ marginLeft: 5 }}
                       onPress={() => navigation.replace("SignUp")}
                     >
-                      <TextLinkContent>  Înregistrați-vă</TextLinkContent>
+                      <TextLinkContent> Înregistrați-vă</TextLinkContent>
                     </TextLink>
                   </Text>
                 </ExtraView>

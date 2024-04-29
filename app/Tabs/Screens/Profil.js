@@ -14,46 +14,86 @@ import UserPermissions from "../Components/Permission";
 import * as ImagePicker from "expo-image-picker";
 import { Colors } from "../../../styles";
 import { StyledButton, ButtonText, Avatar } from "../../../styles";
+import { useNavigation } from "@react-navigation/native";
 
 const { red_logo } = Colors;
 
 const Profil = () => {
+  const navigation = useNavigation();
   const [user, setUser] = useState(null);
   const [firstName, setFirstName] = useState("");
+
+  const goToLogin = () => {
+    navigation.replace("Login");
+  };
+
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+      navigation.replace("Login");
+    } catch (error) {
+      console.error("Eroare la deconectare:", error.message);
+      Alert.alert(
+        "Eroare",
+        "A apărut o eroare la deconectare. Vă rugăm să încercați din nou."
+      );
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authenticatedUser) => {
       if (authenticatedUser) {
         setUser(authenticatedUser);
         const fullName = authenticatedUser.displayName;
-        const splitName = fullName.split(" ");
-        const firstName = splitName[1];
-        setFirstName(firstName);
+        if (fullName) {
+          const splitName = fullName.split(" ");
+          const firstName = splitName[1];
+          setFirstName(firstName);
+        } else {
+          setFirstName("");
+        }
       } else {
         setUser(null);
+        setFirstName("");
       }
     });
     return () => unsubscribe();
   }, []);
 
+  const asyncUpload = async () => {
+    try {   
+      // Verificăm dacă rezultatul selecției imaginii este definit și nu este null
+      if (recordInfo) {
+        const response = await fetch(recordInfo.uri);
+        console.log("Rezultatul selectării imaginii:", recordInfo);
+        const blob = await response.blob();
+        await upload(blob);
+      } else {
+        console.log("Nu s-a selectat nicio imagine.");
+      }
+    } catch (error) {
+      console.log("Eroare la încărcarea imaginii:", error);
+    }
+  };
+  
+
   const handlePickAvatar = async () => {
     await UserPermissions.getCameraPermission();
-
+  
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
     });
+  
+    console.log("Rezultatul selectării imaginii:", result); // Adaugă această linie pentru a verifica rezultatul
+  
 
     if (!result.cancelled) {
-      setUser({ ...user, avatar: result.uri });
       console.log("Imagine selectată:", result.uri);
 
       try {
-        const response = await fetch(result.uri);
-        const blob = await response.blob();
-        const storageRef = storage.ref().child(`profile_images/${user.uid}`);
-        await storageRef.put(blob);
+        asyncUpload();
         console.log("Imaginea a fost încărcată în Firebase Storage.");
       } catch (error) {
         console.error(
@@ -73,37 +113,35 @@ const Profil = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView nestedScrollEnabled={true}>
-        {user && <Text style={styles.greetingText}>Salut, {firstName}</Text>}
-        {!user && (
+        {user ? (
+          <Text style={styles.greetingText}>Salut, {firstName}</Text>
+        ) : (
           <Text style={styles.greetingText2}>
-            Te vrem in familia Pizzeriei La Maria!
+            Te vrem în familia Pizzeriei La Maria!
           </Text>
         )}
         <View style={styles.contentContainer}>
           {user && (
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handlePickAvatar}>
               <ProfilePictureContainer>
-                <ProfilePicture source={{ uri: user.avatar }} />
+                <ProfilePicture
+                  source={{
+                    uri: user.avatar || require("../../../assets/images/user.png"),
+                  }}
+                />
               </ProfilePictureContainer>
             </TouchableOpacity>
           )}
           <View style={styles.userInfoContainer}>
             {user && (
-              <Text style={styles.userInfoText}>Nume: {user.displayName}</Text>
+              <Text style={styles.userInfoText}>
+                Nume: {user.displayName || ""}
+              </Text>
             )}
-            <Text style={styles.userInfoText}>Email: {user.email}</Text>
+            {user && user.email && (
+              <Text style={styles.userInfoText}>Email: {user.email}</Text>
+            )}
           </View>
-          {user && (
-            <ProfilePictureContainer>
-              <TouchableOpacity onPress={handlePickAvatar}>
-                {!user && (
-                  <ProfilePicture
-                    source={require("../../../assets/images/user.png")}
-                  />
-                )}
-              </TouchableOpacity>
-            </ProfilePictureContainer>
-          )}
         </View>
         {!user && (
           <Avatar
@@ -119,16 +157,32 @@ const Profil = () => {
           />
         )}
 
-        <StyledButton
-          style={{
-            width: 260,
-            alignSelf: "center",
-            position: "absolute",
-            bottom: -300,
-          }}
-        >
-          <ButtonText style={{ fontSize: 22 }}>Logout</ButtonText>
-        </StyledButton>
+        {user && (
+          <StyledButton
+            style={{
+              width: 260,
+              alignSelf: "center",
+              position: "absolute",
+              bottom: -300,
+            }}
+            onPress={handleLogout}
+          >
+            <ButtonText style={{ fontSize: 22 }}>Deconectați-vă</ButtonText>
+          </StyledButton>
+        )}
+        {!user && (
+          <StyledButton
+            style={{
+              width: 200,
+              alignSelf: "center",
+              position: "absolute",
+              bottom: -120,
+            }}
+            onPress={goToLogin}
+          >
+            <ButtonText style={{ fontSize: 22 }}>Conectați-vă</ButtonText>
+          </StyledButton>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
