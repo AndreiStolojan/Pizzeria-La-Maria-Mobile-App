@@ -30,6 +30,7 @@ export default Comanda;
 
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import Categories from '../../../components/categories';
 
 const MenuBauturi = () => {
   // Funcție pentru a gestiona selectarea unei băuturi
@@ -46,7 +47,13 @@ const MenuBauturi = () => {
   ];
 
   return (
-    <View style={styles.container}>
+    
+    <ScrollView>
+      <Categories>
+        
+      </Categories>
+    </ScrollView>
+    /*<View style={styles.container}>
       <View style={styles.background}></View>
       <ScrollView style={styles.scrollView}>
         {bauturi.map((bautura, index) => (
@@ -65,10 +72,12 @@ const MenuBauturi = () => {
           </View>
         ))}
       </ScrollView>
-    </View>
+    </View>*/
+
   );
 };
 
+/*
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -123,5 +132,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+*/
 
 export default MenuBauturi;
