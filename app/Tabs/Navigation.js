@@ -127,11 +127,12 @@ function Navigation() {
 function MainNavigator() {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen          
             name="BottomNavigator"
             component={Navigation}
-            options={{ headerShown: false }}/>
+            //options={{ headerShown: false }}
+            />
         <Stack.Screen name="Meniu" component={CategorieMeniu} />
 
       </Stack.Navigator>
