@@ -6,23 +6,29 @@ export const categories = [
         image: require('../assets/images/pizza.jpg'),
         dishes: [
             {
-                id: 1,
+                id: 11,
                 name: 'Margherita',
-                price: '27lei',
+                price: 27,
                 image: require('../assets/images/margherita.jpg'),
             },
             {
-                id: 2,
+                id: 12,
                 name: 'Capriciosa',
-                price: '28lei',
+                price: 28,
                 image: require('../assets/images/capriciosa.jpg'),
             },
             {
-                id: 3,
+                id: 13,
                 name: 'Prosciutto',
-                price: '28lei',
+                price: 28,
                 image: require('../assets/images/prosciutto.jpg'),
-            }
+            },
+            {
+                id: 14,
+                name: 'Margherita2',
+                price: 27,
+                image: require('../assets/images/margherita.jpg'),
+            },
 
         ]
     },
@@ -32,15 +38,15 @@ export const categories = [
         image: require('../assets/images/bauturi.jpg'),
         dishes: [
             {
-                id: 1,
+                id: 21,
                 name: 'Apa plată',
-                price: '5lei',
+                price: 5,
                 image: require('../assets/images/apa.jpg'),
             },
             {
-                id: 2,
+                id: 22,
                 name: 'Coca-Cola',
-                price: '8lei',
+                price: 8,
                 image: require('../assets/images/Coca-Cola.jpg'),
             }
 
@@ -52,15 +58,15 @@ export const categories = [
         image: require('../assets/images/desert.jpg'),
         dishes: [
             {
-                id: 1,
+                id: 31,
                 name: 'Tiramisu',
-                price: '16lei',
+                price: 16,
                 image: require('../assets/images/tiramisu.jpg'),
             },
             {
-                id: 2,
+                id: 32,
                 name: 'Clatite cu gem',
-                price: '11lei',
+                price: 11,
                 image: require('../assets/images/clatite.jpg'),
             }
 
