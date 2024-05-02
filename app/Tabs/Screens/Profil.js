@@ -16,7 +16,7 @@ import { Colors } from "../../../styles";
 import { StyledButton, ButtonText, Avatar } from "../../../styles";
 import { useNavigation } from "@react-navigation/native";
 
-const { red_logo } = Colors;
+const { red_logo,secondary } = Colors;
 
 const Profil = () => {
   const navigation = useNavigation();
@@ -61,7 +61,7 @@ const Profil = () => {
   }, []);
 
   const asyncUpload = async () => {
-    try {   
+    try {
       // Verificăm dacă rezultatul selecției imaginii este definit și nu este null
       if (recordInfo) {
         const response = await fetch(recordInfo.uri);
@@ -75,19 +75,17 @@ const Profil = () => {
       console.log("Eroare la încărcarea imaginii:", error);
     }
   };
-  
 
   const handlePickAvatar = async () => {
     await UserPermissions.getCameraPermission();
-  
+
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
     });
-  
+
     console.log("Rezultatul selectării imaginii:", result); // Adaugă această linie pentru a verifica rezultatul
-  
 
     if (!result.cancelled) {
       console.log("Imagine selectată:", result.uri);
@@ -125,9 +123,11 @@ const Profil = () => {
             <TouchableOpacity onPress={handlePickAvatar}>
               <ProfilePictureContainer>
                 <ProfilePicture
-                  source={{
-                    uri: user.avatar || require("../../../assets/images/user.png"),
-                  }}
+                  source={
+                    user.avatar
+                      ? { uri: user.avatar }
+                      : require("../../../assets/images/user.png")
+                  } style={{ tintColor: "grey" }}
                 />
               </ProfilePictureContainer>
             </TouchableOpacity>
