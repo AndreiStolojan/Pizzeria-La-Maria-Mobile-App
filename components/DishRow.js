@@ -1,14 +1,25 @@
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native'
 import React from 'react'
+import * as Icon from "react-native-feather";
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart, removeFromCart, selectCartItemsById } from '../slices/cartSlice';
 
 export default function DishRow(props) {
     const { item } = props;
+    const totalItems = useSelector(state=> selectCartItemsById(state, item.id));
+    const dispatch = useDispatch();
+    const handleIncrease = ()=>{
+      dispatch(addToCart({...item}))
+    }
+    const handleDecrease = ()=>{
+      dispatch(removeFromCart({id: item.id}))
+    }
   return (
     
     <View style={styles.dish}
     >
         <Image
-        source={item.image} // Schimbă imaginea în funcție de băutura curentă
+        source={item.image}
         style={styles.itemImage}
         />
         <View style={styles.itemDetails}
@@ -16,12 +27,23 @@ export default function DishRow(props) {
             <Text style={styles.itemName}
             >{item.name}</Text>
             <Text style={styles.itemPrice}
-            >{item.price}</Text>
+            >{item.price}lei</Text>
         </View>
-        <TouchableOpacity onPress={() => selecteazaInCos(bautura)} style={styles.selecteazaInCosButton}
-        >
-                <Text style={styles.selecteazaInCosButtonText}
-                >Comanda</Text>
+        <TouchableOpacity 
+          onPress={handleDecrease}
+          disabled={!totalItems.length}
+          style={styles.selecteazaInCosButton}>
+          <Icon.Minus strokeWidth={2} height={15} width={15} stroke={'white'}/>
+        </TouchableOpacity>
+
+        <Text style={{marginHorizontal: 6,fontSize: 16}}>
+          {totalItems.length}
+        </Text>
+
+        <TouchableOpacity 
+          onPress={handleIncrease}
+          style={styles.selecteazaInCosButton}>
+          <Icon.Plus strokeWidth={2} height={15} width={15} stroke={'white'}/>
         </TouchableOpacity>
     </View>
     
@@ -59,9 +81,9 @@ const styles = StyleSheet.create({
     },
     selecteazaInCosButton: {
       backgroundColor: '#b0a96d',//'#4287f5', // Culoarea butonului de adăugare în coș
-      paddingVertical: 8,
-      paddingHorizontal: 12,
-      borderRadius: 5,
+      paddingVertical: 6,
+      paddingHorizontal: 6,
+      borderRadius: 20,
     },
     selecteazaInCosButtonText: {
       color: 'white',

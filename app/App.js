@@ -1,10 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import NavigationTab from './Tabs/Navigation';
+import { Provider } from 'react-redux'
+import { store } from './store';
 
 export default function App() {
   return (
-    <NavigationTab />
+    <Provider store={store}>
+        <NavigationTab />
+    </Provider>
   );
 }
 

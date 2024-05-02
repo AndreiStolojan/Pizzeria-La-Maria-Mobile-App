@@ -1,16 +1,28 @@
 import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigation, useRoute } from "@react-navigation/native";
 import * as Icon from "react-native-feather";
 import DishRow from '../../../components/DishRow';
+import CartIcon from '../../../components/CartIcon';
+import { StatusBar } from 'expo-status-bar';
+import { useDispatch } from 'react-redux';
+import { setRestaurant } from '../../../slices/restaurantSlice';
 
 export default function CategorieMeniu() {
     const { params } = useRoute();
     const navigation= useNavigation();
     const category = params;
-    console.log('meniu: ', category) 
+    //console.log('meniu: ', category)
+    const dispatch = useDispatch();
+    useEffect(()=> {
+        if(category && category.id)
+        {
+            dispatch(setRestaurant({...category}))
+        }
+    },[])
     return (
         <View style={styles.container}>
+            
             <ScrollView style={{backgroundColor: '#8B0000'}}>
                 <View style={styles.imageContainer}>
                     <Image style={styles.image} source={category.image} />
@@ -32,6 +44,8 @@ export default function CategorieMeniu() {
                  }
                 </View>
             </ScrollView>
+            <CartIcon/>
+            <StatusBar style="light"/>
         </View>
     )
 } 
@@ -39,6 +53,7 @@ export default function CategorieMeniu() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        position: 'relative',
     },
     imageContainer: {
       position: 'relative',

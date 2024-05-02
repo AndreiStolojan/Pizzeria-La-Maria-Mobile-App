@@ -9,6 +9,8 @@ import { useState } from "react";
 import { Image } from "react-native";
 import icons from "./../../constants/icons";
 import CategorieMeniu from "./Screens/CategorieMeniu";
+import Cart from "./Screens/Cart";
+import ConfirmareComanda from "./Screens/ConfirmareComanda";
 const Stack = createNativeStackNavigator();
 
 const Tab = createBottomTabNavigator();
@@ -134,7 +136,8 @@ function MainNavigator() {
             //options={{ headerShown: false }}
             />
         <Stack.Screen name="Meniu" component={CategorieMeniu} />
-
+        <Stack.Screen name="Cos" options={{presentation: 'modal'}} component={Cart} />
+        <Stack.Screen name="ConfirmareComanda" options={{presentation: 'fullScreenModal'}} component={ConfirmareComanda} />
       </Stack.Navigator>
     </NavigationContainer>
   );
