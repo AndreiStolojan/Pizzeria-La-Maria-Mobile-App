@@ -3,7 +3,7 @@ import React from 'react'
 import { categories } from '../constants'
 import { useNavigation } from '@react-navigation/native';
 
-export default function Categories({item}) {
+export default function Categories() {
     const navigation = useNavigation();
   return (
     

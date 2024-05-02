@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#b0a96d', //'#8B0000', 
       paddingTop: 10,
       paddingHorizontal: 10,
-      //marginTop: 20, // Adăugat un spațiu de 20 de puncte între imagine și conținut
+      //marginTop: 20, 
   },
   categoryName: {
       color: 'white',
