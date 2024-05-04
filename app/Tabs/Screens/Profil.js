@@ -7,6 +7,7 @@ import {
   Text,
   View,
   StyleSheet,
+  Dimensions
 } from "react-native";
 import { ProfilePicture, ProfilePictureContainer } from "../../../styles";
 import { auth, storage } from "../../../firebase";
@@ -16,7 +17,9 @@ import { Colors } from "../../../styles";
 import { StyledButton, ButtonText, Avatar } from "../../../styles";
 import { useNavigation } from "@react-navigation/native";
 
-const { red_logo } = Colors;
+const { red_logo, secondary } = Colors;
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 const Profil = () => {
   const navigation = useNavigation();
@@ -60,129 +63,64 @@ const Profil = () => {
     return () => unsubscribe();
   }, []);
 
-  const asyncUpload = async () => {
-    try {   
-      // Verificăm dacă rezultatul selecției imaginii este definit și nu este null
-      if (recordInfo) {
-        const response = await fetch(recordInfo.uri);
-        console.log("Rezultatul selectării imaginii:", recordInfo);
-        const blob = await response.blob();
-        await upload(blob);
-      } else {
-        console.log("Nu s-a selectat nicio imagine.");
-      }
-    } catch (error) {
-      console.log("Eroare la încărcarea imaginii:", error);
-    }
-  };
-  
-
-  const handlePickAvatar = async () => {
-    await UserPermissions.getCameraPermission();
-  
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-    });
-  
-    console.log("Rezultatul selectării imaginii:", result); // Adaugă această linie pentru a verifica rezultatul
-  
-
-    if (!result.cancelled) {
-      console.log("Imagine selectată:", result.uri);
-
-      try {
-        asyncUpload();
-        console.log("Imaginea a fost încărcată în Firebase Storage.");
-      } catch (error) {
-        console.error(
-          "Eroare la încărcarea imaginii în Firebase Storage:",
-          error
-        );
-        Alert.alert(
-          "Eroare",
-          "A apărut o eroare la încărcarea imaginii în Firebase Storage."
-        );
-      }
-    } else {
-      console.log("Selectarea imaginii a fost anulată sau nu există URI.");
-    }
-  };
-
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView nestedScrollEnabled={true}>
-        {user ? (
-          <Text style={styles.greetingText}>Salut, {firstName}</Text>
-        ) : (
-          <Text style={styles.greetingText2}>
-            Te vrem în familia Pizzeriei La Maria!
-          </Text>
-        )}
-        <View style={styles.contentContainer}>
-          {user && (
-            <TouchableOpacity onPress={handlePickAvatar}>
-              <ProfilePictureContainer>
+      <ScrollView nestedScrollEnabled={true} style={styles.scrollView}>
+        <View style={styles.innerContainer}>
+          {user ? (
+            <Text style={styles.greetingText}>Salut, {firstName}</Text>
+          ) : (
+            <Text style={styles.greetingText2}>
+              Te vrem în familia Pizzeriei La Maria!
+            </Text>
+          )}
+          <View style={styles.contentContainer}>
+            {user && (
+              <ProfilePictureContainer style={styles.profilePictureContainer}>
                 <ProfilePicture
-                  source={{
-                    uri: user.avatar || require("../../../assets/images/user.png"),
-                  }}
+                  source={
+                    user.avatar
+                      ? { uri: user.avatar }
+                      : require("../../../assets/images/user.png")
+                  }
+                  style={styles.profilePicture}
                 />
               </ProfilePictureContainer>
-            </TouchableOpacity>
-          )}
-          <View style={styles.userInfoContainer}>
-            {user && (
-              <Text style={styles.userInfoText}>
-                Nume: {user.displayName || ""}
-              </Text>
             )}
-            {user && user.email && (
-              <Text style={styles.userInfoText}>Email: {user.email}</Text>
-            )}
+            <View style={styles.userInfoContainer}>
+              {user && (
+                <Text style={styles.userInfoText}>
+                  Nume: {user.displayName || ""}
+                </Text>
+              )}
+              {user && user.email && (
+                <Text style={styles.userInfoText}>Email: {user.email}</Text>
+              )}
+            </View>
           </View>
-        </View>
-        {!user && (
-          <Avatar
-            style={{
-              marginBottom: 20,
-              marginTop: 20,
-              width: 150,
-              height: 150,
-              borderRadius: 75,
-            }}
-            resizeMode="cover"
-            source={require("../../../assets/images/pizzerie_logo_copy.png")}
-          />
-        )}
+          {!user && (
+            <Avatar
+              style={[styles.avatar, { marginTop: windowHeight * 0.1 }]}
+              resizeMode="cover"
+              source={require("../../../assets/images/pizzerie_logo_copy.png")}
+            />
+          )}
 
-        {user && (
-          <StyledButton
-            style={{
-              width: 260,
-              alignSelf: "center",
-              position: "absolute",
-              bottom: -300,
-            }}
-            onPress={handleLogout}
-          >
-            <ButtonText style={{ fontSize: 22 }}>Deconectați-vă</ButtonText>
-          </StyledButton>
-        )}
-        {!user && (
-          <StyledButton
-            style={{
-              width: 200,
-              alignSelf: "center",
-              position: "absolute",
-              bottom: -120,
-            }}
-            onPress={goToLogin}
-          >
-            <ButtonText style={{ fontSize: 22 }}>Conectați-vă</ButtonText>
-          </StyledButton>
-        )}
+          {user && (
+            <StyledButton style={styles.button} onPress={handleLogout}>
+              <ButtonText style={styles.buttonText}>
+                Deconectați-vă
+              </ButtonText>
+            </StyledButton>
+          )}
+          {!user && (
+            <StyledButton style={styles.button} onPress={goToLogin}>
+              <ButtonText style={styles.buttonText}>
+                Conectați-vă
+              </ButtonText>
+            </StyledButton>
+          )}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -193,39 +131,71 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: red_logo,
   },
+  scrollView: {
+    flex: 1,
+  },
+  innerContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingVertical: windowHeight * 0.05,
+    paddingHorizontal: windowWidth * 0.05
+  },
   contentContainer: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 20,
   },
-  userInfoTextContainer: {
-    backgroundColor: "#333",
-    padding: 10,
+  profilePictureContainer: {
+    marginBottom: windowHeight * 0.05,
+    marginTop: windowHeight * 0.05,
+  },
+  profilePicture: {
+    tintColor: "grey",
+  },
+  userInfoContainer: {
+    backgroundColor: "transparent",
+    padding: windowHeight * 0.02,
     borderRadius: 5,
+    marginTop: windowHeight * 0.05,
   },
   userInfoText: {
-    fontSize: 23,
+    fontSize: windowWidth * 0.045,
     color: "#ffffff",
     textAlign: "left",
-    marginTop: 25,
+    marginTop: windowHeight * 0.02,
   },
   greetingText: {
-    fontSize: 24,
+    fontSize: windowWidth * 0.055,
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 0,
-    marginTop: 30,
+    marginTop: windowHeight * 0.03,
     color: "#ffffff",
   },
   greetingText2: {
-    fontSize: 50,
+    fontSize: windowWidth * 0.065,
     fontWeight: "bold",
     textAlign: "center",
-    marginBottom: 0,
-    marginTop: 100,
-    marginLeft: 40,
-    marginRight: 40,
+    marginBottom: windowHeight * 0.01,
+    marginTop: windowHeight * 0.1,
+    marginLeft: windowWidth * 0.05,
+    marginRight: windowWidth * 0.05,
     color: "#ffffff",
+  },
+  avatar: {
+    marginTop: windowHeight * 0.02,
+    marginBottom: windowHeight * 0.05,
+    width: windowWidth * 0.5,
+    aspectRatio: 1,
+    borderRadius: windowWidth * 0.25,
+    alignSelf: "center",
+  },
+  button: {
+    width: windowWidth * 0.6,
+    alignSelf: "center",
+    marginTop: windowHeight * 0.05,
+  },
+  buttonText: {
+    fontSize: windowWidth * 0.05,
   },
 });
 
