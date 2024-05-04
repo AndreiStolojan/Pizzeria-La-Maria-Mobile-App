@@ -1,4 +1,5 @@
 import React from "react";
+import { View, StyleSheet, Dimensions, Platform } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
@@ -6,20 +7,27 @@ import Comanda from "../Screens/Comanda";
 import Rezervari from "../Screens/Rezervari";
 import Login from "../Screens/Login";
 import SignUp from "../Screens/SignUp";
-import Welcome from "../Screens/Welcome";
 import Profil from "../Screens/Profil";
-import Icon from 'react-native-vector-icons/MaterialIcons';; // Importă componenta Icon
+import Icon from "react-native-vector-icons/MaterialIcons"; // Importă componenta Icon
 import { Image, TouchableOpacity } from "react-native";
 import icons from "../../../constants/icons";
-import { Colors } from '../../../styles';
-// import Icon from 'react-native-vector-icons/MaterialIcons';
-
+import { Colors } from "../../../styles";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
 const { red_logo } = Colors;
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 
 const RootStack = () => {
+  const headerLeftPadding = windowWidth * 0.05;
+  const headerRightPadding = windowWidth * 0.05;
+  const tabBarIconSize = windowWidth * 0.1;
+  const tabBarIconMarginTop = windowWidth * 0.07;
+  const tabBarStyleLeftRightPadding = windowWidth * 0.1;
+  const tabBarStyleBottomPadding = windowWidth * 0.08;
+  const tabBarStyleMinHeight = windowHeight * 0.08;
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -28,19 +36,57 @@ const RootStack = () => {
           headerTintColor: "transparent",
           headerTransparent: true,
           headerLeftContainerStyle: {
-            paddingLeft: 20,
+            paddingLeft: windowWidth * 0.05, // Folosește o dimensiune relativă
           },
-          headerRightContainerStyle: { paddingRight: 20 }, // Aliniază butonul în partea dreaptă
+          headerRightContainerStyle: { paddingRight: windowWidth * 0.05 }, // Folosește o dimensiune relativă
         }}
         initialRouteName="Main"
       >
         <Stack.Screen
           name="Login"
           component={Login}
-          options={{ headerShown: false }}
+          options={({ navigation }) => ({
+            headerLeft: () => (
+              <TouchableOpacity
+                style={{ marginLeft: 20 }}
+                onPress={() => navigation.navigate("Main")} // Modifică aici
+              >
+                <Icon name="arrow-back" size={33} color="white" />
+              </TouchableOpacity>
+            ),
+          })}
         />
-        <Stack.Screen name="SignUp" component={SignUp} />
-        <Stack.Screen name="Welcome" component={Welcome} />
+
+        <Stack.Screen
+          name="SignUp"
+          component={SignUp}
+          options={({ navigation }) => ({
+            headerLeft: () => (
+              <TouchableOpacity
+                style={{ marginLeft: 20 }}
+                onPress={() => navigation.navigate("Main")} // Modifică aici
+              >
+                <Icon name="arrow-back" size={33} color="white" />
+              </TouchableOpacity>
+            ),
+          })}
+        />
+
+        <Stack.Screen
+          name="Profil"
+          component={Profil}
+          options={({ navigation }) => ({
+            headerLeft: () => (
+              <TouchableOpacity
+                style={{ marginLeft: 20 }}
+                onPress={() => navigation.goBack()}
+              >
+                <Icon name="arrow-back" size={33} color="white" />
+              </TouchableOpacity>
+            ),
+          })}
+        />
+
         <Stack.Screen name="Main" options={{ headerShown: false }}>
           {({ navigation }) => (
             <Tab.Navigator
@@ -54,29 +100,42 @@ const RootStack = () => {
                     iconName = focused ? icons.reservation : icons.reservation; // Iconita pentru Rezervari
                   }
 
-                  
                   return (
                     <Image
                       source={iconName}
-                      style={{ width: 33, height: 33, tintColor: color }}
+                      style={{
+                        width: windowWidth * 0.08,
+                        height: windowWidth * 0.08,
+                        tintColor: color,
+                      }}
                     />
                   );
                 },
                 tabBarActiveTintColor: red_logo,
-                tabBarInactiveTintColor: "black",
+                tabBarInactiveTintColor: "white",
                 tabBarLabelStyle: {
                   display: "none",
                 },
-                
+
                 tabBarStyle: {
-                  backgroundColor: "#ffffff", // Setează culoarea fundalului barei de navigare a tabului
-                  borderTopWidth: 0, // Elimină linia de sus a barei de navigare a tabului
+                  backgroundColor: "black", // Setează culoarea fundalului barei de navigare a tabului
+                  borderTopWidth: 0,
                   position: "absolute", // Poziționează bara de navigare deasupra conținutului
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
                   elevation: 0, // Elimină umbra Android
+                  borderTopLeftRadius: 40, // Rotunjirea colțurilor stânga-sus
+                  borderTopRightRadius: 40, // Rotunjirea colțurilor dreapta-sus
+                  borderBottomLeftRadius: 40, // Rotunjirea colțurilor din partea de jos
+                  borderBottomRightRadius: 40,
+                  left: 30, // Spațiu la stânga
+                  right: 30, // Spațiu la dreapta
+                  bottom: Platform.OS === "ios" ? windowHeight * 0.05 : 0, // Spațiu jos
+                  minHeight: 60, // Înălțimea minimă a tabbarului
+                  flexDirection: "row", // Așezarea elementelor într-o singură linie
+                  justifyContent: "space-around", // Distribuie spațiul liber între elementele tabbarului
+                  alignItems: "center", // Alinierea elementelor pe axa verticală
+                  // Setăm bottom pentru iOS la o anumită valoare pentru a fi deasupra liniei
                 },
+
                 headerTransparent: true,
                 headerTitle: " ",
                 headerRight: () => {
@@ -84,11 +143,15 @@ const RootStack = () => {
                   return (
                     <TouchableOpacity
                       style={{ marginRight: 20 }}
-                      onPress={() => navigation.navigate("Login")}
+                      onPress={() => navigation.navigate("Profil")}
                     >
                       {/* Utilizează componenta Icon */}
-                      <Icon name="person" size={33} color="black" style={{marginTop: 15}} />
-
+                      <Icon
+                        name="person"
+                        size={33}
+                        color="black"
+                        style={{ marginTop: 15 }}
+                      />
                     </TouchableOpacity>
                   );
                 },
@@ -97,27 +160,49 @@ const RootStack = () => {
                 display: "flex",
               }}
             >
-              <Tab.Screen name="Comanda" component={Comanda} />
-              <Tab.Screen name="Rezervari" component={Rezervari} />
-              <Tab.Screen name="Profil" component={Profil} />
-              
-              
+              <Tab.Screen
+                name="Comanda"
+                component={Comanda}
+                options={{
+                  tabBarIcon: ({ color, size }) => (
+                    <Image
+                      source={icons.pizza}
+                      style={{
+                        width: windowWidth * 0.08,
+                        height: windowWidth * 0.08,
+                        tintColor: color,
+                        ...(Platform.OS === "ios" && {
+                          marginTop: windowHeight*0.03,
+                        })
+                      }}
+                    />
+                  ),
+                }}
+              />
+              <Tab.Screen
+                name="Rezervari"
+                component={Rezervari}
+                options={{
+                  tabBarIcon: ({ color, size }) => (
+                    <Image
+                      source={icons.reservation}
+                      style={{
+                        width: windowWidth * 0.08,
+                        height: windowWidth * 0.08,
+                        tintColor: color,
+                        ...(Platform.OS === "ios" && {
+                        marginTop: windowHeight*0.03,
+                      })
+                      }}
+                    />
+                  ),
+                }}
+              />
             </Tab.Navigator>
           )}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
-  );
-};
-
-const LoginStack = () => {
-  return (
-    <Stack.Navigator
-      screenOptions={{ headerShown: false }}
-      initialRouteName="Login"
-    >
-      <Stack.Screen name="Login" component={Login} />
-    </Stack.Navigator>
   );
 };
 
