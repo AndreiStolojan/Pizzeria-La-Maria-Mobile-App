@@ -7,7 +7,8 @@ import {
   Text,
   View,
   StyleSheet,
-  Dimensions
+  Dimensions,
+  Image
 } from "react-native";
 import { ProfilePicture, ProfilePictureContainer } from "../../../styles";
 import { auth, storage } from "../../../firebase";
@@ -99,11 +100,13 @@ const Profil = () => {
             </View>
           </View>
           {!user && (
-            <Avatar
-              style={[styles.avatar, { marginTop: windowHeight * 0.1 }]}
-              resizeMode="cover"
-              source={require("../../../assets/images/pizzerie_logo_copy.png")}
-            />
+            <View style={styles.avatarContainer}>
+              <Image
+                style={styles.avatar}
+                resizeMode="cover"
+                source={require("../../../assets/images/pizzerie_logo_copy.png")}
+              />
+            </View>
           )}
 
           {user && (
@@ -181,13 +184,14 @@ const styles = StyleSheet.create({
     marginRight: windowWidth * 0.05,
     color: "#ffffff",
   },
+  avatarContainer: {
+    alignItems: "center",
+    marginBottom: windowHeight * 0.05, // Margin-bottom mai mare între imagine și butoanele de dedesubt
+  },
   avatar: {
-    marginTop: windowHeight * 0.02,
-    marginBottom: windowHeight * 0.05,
-    width: windowWidth * 0.5,
-    aspectRatio: 1,
-    borderRadius: windowWidth * 0.25,
-    alignSelf: "center",
+    width: windowWidth * 0.6, // Ajustează dimensiunea avatarului pentru a fi mai mare
+    height: windowWidth * 0.6, // Ajustează dimensiunea avatarului pentru a fi mai mare
+    borderRadius: windowWidth * 0.3, // Asigură că avatarul rămâne circular
   },
   button: {
     width: windowWidth * 0.6,

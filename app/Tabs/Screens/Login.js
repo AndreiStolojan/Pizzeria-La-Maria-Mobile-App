@@ -161,9 +161,7 @@ const Login = () => {
                   setHidePassword={setHidePassword}
                 />
                 {message && <MsgBox type={messageType}>{message}</MsgBox>}
-                <View
-                  
-                >
+                <View>
                   <StyledButton
                     style={{ width: 150 }}
                     onPress={handleSubmit}
@@ -171,7 +169,6 @@ const Login = () => {
                   >
                     <ButtonText>Conectați-vă</ButtonText>
                   </StyledButton>
-                 
                 </View>
                 <ExtraView
                   style={{

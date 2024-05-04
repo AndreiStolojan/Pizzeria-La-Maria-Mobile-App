@@ -120,6 +120,8 @@ const RootStack = () => {
                 tabBarStyle: {
                   backgroundColor: "black", // Setează culoarea fundalului barei de navigare a tabului
                   borderTopWidth: 0,
+                  backgroundColor: "black", // Setează culoarea fundalului barei de navigare a tabului
+                  borderTopWidth: 0,
                   position: "absolute", // Poziționează bara de navigare deasupra conținutului
                   elevation: 0, // Elimină umbra Android
                   borderTopLeftRadius: 40, // Rotunjirea colțurilor stânga-sus
@@ -157,7 +159,7 @@ const RootStack = () => {
                 },
               })}
               tabBarStyle={{
-                display: "flex",
+                display: "flex", 
               }}
             >
               <Tab.Screen
