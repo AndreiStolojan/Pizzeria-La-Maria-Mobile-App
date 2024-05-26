@@ -129,8 +129,10 @@ const ReservationForm = () => {
      
     
         return (
-            <SafeAreaView style={{ flex: 1 }}>
+            
             <View style={styles.container}>
+                <SafeAreaView style={{ flex: 1 }}>
+                <View style={styles.innerContainer}>
                 <Text style={styles.title}>Rezervare existentă:</Text>
                 <View style={styles.reservationBox}>
                     <Text style={styles.detail}>Nume: {existingReservation.name}</Text>
@@ -145,8 +147,10 @@ const ReservationForm = () => {
                 >
                     <Text style={styles.buttonRezerva}>Șterge Rezervarea</Text>
                 </TouchableOpacity>
+                </View>
+                </SafeAreaView>
             </View>
-            </SafeAreaView>
+           
         );
     }
     
@@ -249,6 +253,7 @@ const styles = StyleSheet.create({
         fontSize: height * 0.03,
         fontWeight: 'bold',
         marginBottom: height * 0.06,
+        marginTop: height * 0.0,
         color: '#fff',
     },
     detail: {
