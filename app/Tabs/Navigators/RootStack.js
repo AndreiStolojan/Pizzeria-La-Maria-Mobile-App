@@ -1,5 +1,5 @@
-import React from "react";
-import { View, StyleSheet, Dimensions, Platform } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet, Dimensions, Platform, Keyboard } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
@@ -21,13 +21,28 @@ const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
 const RootStack = () => {
-  const headerLeftPadding = windowWidth * 0.05;
-  const headerRightPadding = windowWidth * 0.05;
-  const tabBarIconSize = windowWidth * 0.1;
-  const tabBarIconMarginTop = windowWidth * 0.07;
-  const tabBarStyleLeftRightPadding = windowWidth * 0.1;
-  const tabBarStyleBottomPadding = windowWidth * 0.08;
-  const tabBarStyleMinHeight = windowHeight * 0.08;
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true);
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false);
+      }
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
+
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -49,7 +64,7 @@ const RootStack = () => {
             headerLeft: () => (
               <TouchableOpacity
                 style={{ marginLeft: 20 }}
-                onPress={() => navigation.navigate("Main")} // Modifică aici
+                onPress={() => navigation.navigate("Main")} 
               >
                 <Icon name="arrow-back" size={33} color="white" />
               </TouchableOpacity>
@@ -112,14 +127,11 @@ const RootStack = () => {
                   );
                 },
                 tabBarActiveTintColor: red_logo,
-                tabBarInactiveTintColor: "white",
+                tabBarInactiveTintColor: "#D2B48C",
                 tabBarLabelStyle: {
                   display: "none",
                 },
-
                 tabBarStyle: {
-                  backgroundColor: "black", // Setează culoarea fundalului barei de navigare a tabului
-                  borderTopWidth: 0,
                   backgroundColor: "black", // Setează culoarea fundalului barei de navigare a tabului
                   borderTopWidth: 0,
                   position: "absolute", // Poziționează bara de navigare deasupra conținutului
@@ -135,19 +147,17 @@ const RootStack = () => {
                   flexDirection: "row", // Așezarea elementelor într-o singură linie
                   justifyContent: "space-around", // Distribuie spațiul liber între elementele tabbarului
                   alignItems: "center", // Alinierea elementelor pe axa verticală
-                  // Setăm bottom pentru iOS la o anumită valoare pentru a fi deasupra liniei
+                  bottom: windowHeight * 0.05, // Setăm bottom pentru iOS la o anumită valoare pentru a fi deasupra liniei
+                  display: isKeyboardVisible ? "none" : "flex", // Ascunde tab bar-ul când tastatura este vizibilă
                 },
-
                 headerTransparent: true,
                 headerTitle: " ",
                 headerRight: () => {
-                  // Butonul din partea dreaptă sus
                   return (
                     <TouchableOpacity
                       style={{ marginRight: 20 }}
                       onPress={() => navigation.navigate("Profil")}
                     >
-                      {/* Utilizează componenta Icon */}
                       <Icon
                         name="person"
                         size={33}
@@ -158,9 +168,6 @@ const RootStack = () => {
                   );
                 },
               })}
-              tabBarStyle={{
-                display: "flex", 
-              }}
             >
               <Tab.Screen
                 name="Comanda"
@@ -174,8 +181,8 @@ const RootStack = () => {
                         height: windowWidth * 0.08,
                         tintColor: color,
                         ...(Platform.OS === "ios" && {
-                          marginTop: windowHeight*0.03,
-                        })
+                          marginTop: windowHeight * 0.03,
+                        }),
                       }}
                     />
                   ),
@@ -193,8 +200,8 @@ const RootStack = () => {
                         height: windowWidth * 0.08,
                         tintColor: color,
                         ...(Platform.OS === "ios" && {
-                        marginTop: windowHeight*0.03,
-                      })
+                          marginTop: windowHeight * 0.03,
+                        }),
                       }}
                     />
                   ),

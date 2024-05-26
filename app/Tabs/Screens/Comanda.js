@@ -1,43 +1,57 @@
-import React from 'react';
-import { ScrollView, View, Text, StyleSheet, Dimensions, ImageBackground } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const { height, width } = Dimensions.get('window');
+const ReservationList = () => {
+    const [reservations, setReservations] = useState([]);
 
-function Comanda() {
-  return (
-    <ScrollView nestedScrollEnabled={true} style={styles.scrollView}>
-      <ImageBackground style={styles.backgroundImage}>
+    useEffect(() => {
+        const fetchReservations = async () => {
+            try {
+                const existingReservations = await AsyncStorage.getItem('reservations');
+                setReservations(existingReservations ? JSON.parse(existingReservations) : []);
+            } catch (error) {
+                console.error('Eroare la preluarea rezervărilor:', error);
+            }
+        };
+
+        fetchReservations();
+    }, []);
+
+    return (
         <View style={styles.container}>
-          <Text style={styles.text}>Da, mă duc la pagina de comenzi</Text>
+            <Text style={styles.title}>Rezervările Tale</Text>
+            <FlatList
+                data={reservations}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => (
+                    <View style={styles.item}>
+                        <Text>{item.name}</Text>
+                        <Text>{item.email}</Text>
+                        <Text>{item.date}</Text>
+                        <Text>{item.persons} persoane</Text>
+                    </View>
+                )}
+            />
         </View>
-      </ImageBackground>
-    </ScrollView>
-  );
-}
+    );
+};
 
 const styles = StyleSheet.create({
-  scrollView: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  backgroundImage: {
-    flex: 1,
-    resizeMode: 'cover', // Pentru a acoperi întreaga suprafață a ecranului
-    justifyContent: 'center',
-    width: width,
-    height: height,
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: 'black', // Culoare textului
-  },
+    container: {
+        flex: 1,
+        padding: 20,
+        marginTop:150,
+    },
+    title: {
+        fontSize: 24,
+        marginBottom: 20,
+    },
+    item: {
+        padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+    },
 });
 
-export default Comanda;
+export default ReservationList;

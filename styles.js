@@ -126,6 +126,7 @@ export const StyledButton = styled.TouchableOpacity`
   width: 150px; /* Lățimea butonului */
   elevation: 5; /* Efect de umbră pentru o aparență tridimensională */
   align-self: center;
+  
 
   flex-direction: ${(props) =>
     props.google

@@ -160,7 +160,20 @@ const Login = () => {
                   hidePassword={hidePassword}
                   setHidePassword={setHidePassword}
                 />
-                {message && <MsgBox type={messageType}>{message}</MsgBox>}
+              {message && (
+  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    <FontAwesome
+      name={messageType === 'FAILED' ? 'exclamation-circle' : 'check-circle'}
+      size={20}
+      color={messageType === 'FAILED' ? 'orange' : 'green'}
+    />
+    <Text style={{ marginLeft: 10, color: messageType === 'FAILED' ? 'orange' : 'green' }}>
+      {message}
+    </Text>
+  </View>
+)}
+
+
                 <View>
                   <StyledButton
                     style={{ width: 150 }}
