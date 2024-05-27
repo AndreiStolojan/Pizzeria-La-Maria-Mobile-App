@@ -213,16 +213,6 @@ const RootStack = () => {
             </Tab.Navigator>
           )}
         </Stack.Screen>
-
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-};
-
-export default RootStack;
-
-
-/*
         <Stack.Screen name="Meniu" component={CategorieMeniu} />
         <Stack.Screen
           name="Cos"
@@ -234,4 +224,13 @@ export default RootStack;
           options={{ presentation: "fullScreenModal" }}
           component={ConfirmareComanda}
         />
-*/
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
+export default RootStack;
+
+
+
+
