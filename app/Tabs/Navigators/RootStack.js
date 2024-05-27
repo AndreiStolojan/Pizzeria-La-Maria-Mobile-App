@@ -8,6 +8,9 @@ import Rezervari from "../Screens/Rezervari";
 import Login from "../Screens/Login";
 import SignUp from "../Screens/SignUp";
 import Profil from "../Screens/Profil";
+import CategorieMeniu from "../Screens/CategorieMeniu";
+import Cart from "../Screens/Cart";
+import ConfirmareComanda from "../Screens/ConfirmareComanda";
 import Icon from "react-native-vector-icons/MaterialIcons"; // Importă componenta Icon
 import { Image, TouchableOpacity } from "react-native";
 import icons from "../../../constants/icons";
@@ -210,9 +213,25 @@ const RootStack = () => {
             </Tab.Navigator>
           )}
         </Stack.Screen>
+
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
 
 export default RootStack;
+
+
+/*
+        <Stack.Screen name="Meniu" component={CategorieMeniu} />
+        <Stack.Screen
+          name="Cos"
+          options={{ presentation: "modal" }}
+          component={Cart}
+        />
+        <Stack.Screen
+          name="ConfirmareComanda"
+          options={{ presentation: "fullScreenModal" }}
+          component={ConfirmareComanda}
+        />
+*/
