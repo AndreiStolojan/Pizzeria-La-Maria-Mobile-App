@@ -1,5 +1,5 @@
-import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'react-native'
-import React, { useEffect } from 'react'
+import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect } from 'react';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import * as Icon from "react-native-feather";
 import DishRow from '../../../components/DishRow';
@@ -7,28 +7,31 @@ import CartIcon from '../../../components/CartIcon';
 import { StatusBar } from 'expo-status-bar';
 import { useDispatch } from 'react-redux';
 import { setRestaurant } from '../../../slices/restaurantSlice';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CategorieMeniu() {
     const { params } = useRoute();
-    const navigation= useNavigation();
+    const navigation = useNavigation();
     const category = params;
-    //console.log('meniu: ', category)
     const dispatch = useDispatch();
-    useEffect(()=> {
-        if(category && category.id)
-        {
-            dispatch(setRestaurant({...category}))
+
+    useEffect(() => {
+        if (category && category.id) {
+            dispatch(setRestaurant({ ...category }));
         }
-    },[])
+    }, []);
+
     return (
-        <View style={styles.container}>
-            
-            <ScrollView style={{backgroundColor: '#8B0000'}}>
+        <SafeAreaView style={styles.safeArea}>
+            <StatusBar style="light" />
+            <ScrollView contentContainerStyle={styles.scrollView}>
                 <View style={styles.imageContainer}>
                     <Image style={styles.image} source={category.image} />
-                    <TouchableOpacity style={styles.button}
-                      onPress={()=> navigation.goBack()}>
-                          <Icon.ArrowLeft strokeWidth={3} stroke="white"  />
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => navigation.goBack()}
+                    >
+                        <Icon.ArrowLeft strokeWidth={3} stroke="white" />
                     </TouchableOpacity>
                 </View>
 
@@ -39,24 +42,27 @@ export default function CategorieMeniu() {
                 </View>
 
                 <View>
-                 { 
-                    category.dishes.map((dish, index)=> <DishRow item={dish} key={index}/>)
-                 }
+                    {category.dishes.map((dish, index) => (
+                        <DishRow item={dish} key={index} />
+                    ))}
                 </View>
             </ScrollView>
-            <CartIcon/>
-            <StatusBar style="light"/>
-        </View>
-    )
-} 
+            <CartIcon />
+        </SafeAreaView>
+    );
+}
 
 const styles = StyleSheet.create({
-    container: {
+    safeArea: {
         flex: 1,
-        position: 'relative',
+        backgroundColor: '#8B0000',
+    },
+    scrollView: {
+        flexGrow: 1,
+        backgroundColor: '#8B0000',
     },
     imageContainer: {
-      position: 'relative',
+        position: 'relative',
     },
     image: {
         width: '100%',
@@ -64,33 +70,32 @@ const styles = StyleSheet.create({
         resizeMode: 'cover',
     },
     button: {
-      position: 'absolute',
-      top: 30,
-      left: 6,
-      backgroundColor: '#b0a96d',
-      padding: 8,
-      borderRadius: 999, // A value larger than half of the button's width or height to make it fully rounded
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-      elevation: 5,
+        position: 'absolute',
+        top: 30,
+        left: 6,
+        backgroundColor: '#b0a96d',
+        padding: 8,
+        borderRadius: 999,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     contentContainer: {
-      backgroundColor: '#b0a96d', //'#8B0000', 
-      paddingTop: 10,
-      paddingHorizontal: 10,
-      //marginTop: 20, 
-  },
-  categoryName: {
-      color: 'white',
-      fontSize: 22,
-      fontWeight: 'bold',
-      textAlign: 'center',
-      paddingVertical: 6,
-  },
-
+        backgroundColor: '#b0a96d',
+        paddingTop: 10,
+        paddingHorizontal: 10,
+    },
+    categoryName: {
+        color: 'white',
+        fontSize: 22,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        paddingVertical: 6,
+    },
 });
+
