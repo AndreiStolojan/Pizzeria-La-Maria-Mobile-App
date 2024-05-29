@@ -21,18 +21,22 @@ First, clone the repository from GitHub:
 ```bash
 git clone <repository_url>
 cd <repository_directory>
+```
 Installing Dependencies
 Once you have cloned the repository, you need to install the required dependencies. Run the following command in the project directory:
 
-bash
+```bash
 Copy code
 npm install expo-cli --legacy-peer-deps
+```
 Starting the Server
 After installing the dependencies, start the Expo server with the following command:
 
-bash
+
+```bash
 Copy code
 npm start
+```
 This command will start the Expo development server and open a new browser window with the Expo DevTools.
 
 Running on an Emulator
