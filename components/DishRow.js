@@ -2,17 +2,17 @@ import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native'
 import React from 'react'
 import * as Icon from "react-native-feather";
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart, removeFromCart, selectCartItemsById } from '../slices/cartSlice';
+import { addToCart, removeFromCart, selectCartItemById } from '../slices/cartSlice';
 
 export default function DishRow(props) {
     const { item } = props;
-    const totalItems = useSelector(state=> selectCartItemsById(state, item.id));
+    const cartItem = useSelector(state => selectCartItemById(state, item.id));
     const dispatch = useDispatch();
-    const handleIncrease = ()=>{
-      dispatch(addToCart({...item}))
+    const handleIncrease = () => {
+      dispatch(addToCart({...item}));
     }
-    const handleDecrease = ()=>{
-      dispatch(removeFromCart({id: item.id}))
+    const handleDecrease = () => {
+      dispatch(removeFromCart({id: item.id}));
     }
   return (
     
@@ -31,13 +31,13 @@ export default function DishRow(props) {
         </View>
         <TouchableOpacity 
           onPress={handleDecrease}
-          disabled={!totalItems.length}
+          disabled={!cartItem}
           style={styles.selecteazaInCosButton}>
           <Icon.Minus strokeWidth={2} height={15} width={15} stroke={'white'}/>
         </TouchableOpacity>
 
         <Text style={{marginHorizontal: 6,fontSize: 16}}>
-          {totalItems.length}
+          {cartItem?.quantity || 0}
         </Text>
 
         <TouchableOpacity 

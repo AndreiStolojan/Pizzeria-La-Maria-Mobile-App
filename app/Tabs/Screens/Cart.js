@@ -6,13 +6,15 @@ import { useNavigation } from "@react-navigation/native";
 import { selectRestaurant } from '../../../slices/restaurantSlice';
 import { emptyCart, removeFromCart, selectCartItems, selectCartTotal } from '../../../slices/cartSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { auth } from '../../../firebase';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 
 export default function Cart() {
     const products = useSelector(selectRestaurant);
     const navigation = useNavigation();
     const cartItems = useSelector(selectCartItems);
     const cartTotal = useSelector(selectCartTotal);
-    const [groupedItems, setGroupedItems] = useState({});
     const [savedCards, setSavedCards] = useState([]);
     const [selectedCard, setSelectedCard] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -20,19 +22,9 @@ export default function Cart() {
     const [newCardExpiry, setNewCardExpiry] = useState('');
     const [newCardCVC, setNewCardCVC] = useState('');
     const [initialBalance, setInitialBalance] = useState('');
+    const [discountApplied, setDiscountApplied] = useState(false);
+    const [discountedTotal, setDiscountedTotal] = useState(null);
     const dispatch = useDispatch();
-
-    useEffect(() => {
-        const items = cartItems.reduce((group, item) => {
-            if (group[item.id]) {
-                group[item.id].push(item);
-            } else {
-                group[item.id] = [item];
-            }
-            return group;
-        }, {});
-        setGroupedItems(items);
-    }, [cartItems]);
 
     useEffect(() => {
         const loadCards = async () => {
@@ -44,28 +36,52 @@ export default function Cart() {
         loadCards();
     }, []);
 
+    const handleApplyDiscount = async () => {
+      const user = auth.currentUser;
+      if (!user) {
+        Alert.alert('Eroare', 'Trebuie să fii autentificat pentru a aplica o reducere.');
+        return;
+      }
+
+      const firestore = firebase.firestore();
+      const userRef = firestore.collection('users').doc(user.uid);
+      const userDoc = await userRef.get();
+  
+      if (userDoc.exists && userDoc.data().loyaltyPoints >= 100) {
+        const newPoints = userDoc.data().loyaltyPoints - 100;
+        const discount = cartTotal * 0.1; // 10% discount
+        setDiscountedTotal(cartTotal - discount);
+        setDiscountApplied(true);
+        await userRef.update({ loyaltyPoints: newPoints });
+        Alert.alert('Reducere aplicată!', 'Ai folosit 100 de puncte pentru o reducere de 10%.');
+      } else {
+        Alert.alert('Puncte insuficiente', 'Nu ai suficiente puncte de loialitate pentru a aplica reducerea.');
+      }
+    };
+
     const handlePayment = () => {
         if (selectedCard === null) {
             Alert.alert('Eroare', 'Te rog selectează un card pentru plată.');
             return;
         }
     
+        const totalToPay = discountApplied ? discountedTotal : cartTotal;
         const selectedCardDetails = savedCards[selectedCard];
-        if (selectedCardDetails.balance < cartTotal) {
+        if (selectedCardDetails.balance < totalToPay) {
             Alert.alert('Fonduri insuficiente', 'Fondurile disponibile pe acest card nu sunt suficiente pentru a finaliza plata.');
             return;
         }
     
         
         const updatedCards = [...savedCards];
-        updatedCards[selectedCard].balance -= cartTotal;
+        updatedCards[selectedCard].balance -= totalToPay;
         setSavedCards(updatedCards);
         AsyncStorage.setItem('savedCards', JSON.stringify(updatedCards));
 
         
         Alert.alert(
             "Plata reușită",
-            `Plata de ${cartTotal} lei a fost efectuată cu succes cu cardul **** **** **** ${selectedCardDetails.number.slice(-4)}!`,
+            `Plata de ${totalToPay.toFixed(2)} lei a fost efectuată cu succes cu cardul **** **** **** ${selectedCardDetails.number.slice(-4)}!`,
             [
                 {
                     text: "OK",
@@ -122,16 +138,15 @@ export default function Cart() {
             </View>
 
             <ScrollView contentContainerStyle={{ paddingBottom: 50 }}>
-                {Object.entries(groupedItems).map(([key, items]) => {
-                    let dish = items[0];
+                {cartItems.map((item) => {
                     return (
-                        <View key={key} style={styles.itemContainer}>
-                            <Text style={styles.itemCount}>{items.length} x</Text>
-                            <Image style={styles.itemImage} source={dish.image} />
-                            <Text style={styles.itemName}>{dish.name}</Text>
-                            <Text style={styles.itemPrice}>{dish.price}lei</Text>
+                        <View key={item.id} style={styles.itemContainer}>
+                            <Text style={styles.itemCount}>{item.quantity} x</Text>
+                            <Image style={styles.itemImage} source={item.image} />
+                            <Text style={styles.itemName}>{item.name}</Text>
+                            <Text style={styles.itemPrice}>{item.price}lei</Text>
                             <TouchableOpacity
-                                onPress={() => dispatch(removeFromCart({ id: dish.id }))}
+                                onPress={() => dispatch(removeFromCart({ id: item.id }))}
                                 style={styles.removeItemButton}>
                                 <Icon.Minus strokeWidth={2} height={10} width={10} stroke={'white'} />
                             </TouchableOpacity>
@@ -142,8 +157,23 @@ export default function Cart() {
 
             <View style={styles.totalContainer}>
                 <View style={styles.totalRow}>
+                    <Text style={styles.totalText}>Subtotal</Text>
+                    <Text style={styles.totalText}>{cartTotal.toFixed(2)}lei</Text>
+                </View>
+                {discountApplied && (
+                  <View style={styles.totalRow}>
+                    <Text style={styles.totalText}>Reducere (10%)</Text>
+                    <Text style={styles.totalText}>- {(cartTotal * 0.1).toFixed(2)}lei</Text>
+                  </View>
+                )}
+                <View style={styles.totalRow}>
                     <Text style={styles.totalText}>Total</Text>
-                    <Text style={styles.totalText}>{cartTotal}lei</Text>
+                    <Text style={styles.totalText}>{(discountApplied ? discountedTotal : cartTotal).toFixed(2)}lei</Text>
+                </View>
+                <View style={styles.totalRow}>
+                  <TouchableOpacity onPress={handleApplyDiscount} disabled={discountApplied}>
+                    <Text style={{color: 'white', textDecorationLine: discountApplied? 'line-through' : 'none'}}>Aplica reducere (100 puncte)</Text>
+                  </TouchableOpacity>
                 </View>
                 <View style={styles.cardSelectionContainer}>
                 

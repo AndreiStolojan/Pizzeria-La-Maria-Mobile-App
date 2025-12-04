@@ -81,31 +81,6 @@ const Login = () => {
       });
   };
 
-  // const handleGoogleLogin = async () => {
-  //   try {
-  //     // Inițializarea modulelor Google Sign-In
-  //     await GoogleSignin.hasPlayServices();
-  //     await GoogleSignin.configure({
-  //       webClientId: '997153372756-aujnbpcvmkgkqomcp87ti178rf2e3p53.apps.googleusercontent.com', // ID-ul clientului web din consola Firebase
-  //       offlineAccess: true,
-  //       forceCodeForRefreshToken: true,
-  //     });
-
-  //     // Deschiderea ecranului de autentificare Google
-  //     const userInfo = await GoogleSignin.signIn();
-  //     const googleCredential = auth.GoogleAuthProvider.credential(userInfo.idToken);
-
-  //     // Autentificarea cu credențialele Google
-  //     await auth().signInWithCredential(googleCredential);
-
-  //     console.log('Autentificare cu Google reușită:', userInfo);
-
-  //     // Navigare către pagina de profil sau altă destinație dorită
-  //     navigation.replace("Profil");
-  //   } catch (error) {
-  //     console.error('Eroare la autentificarea cu Google:', error);
-  //   }
-  // };
 
   return (
     <KeyboardAvoidingWrapper>
