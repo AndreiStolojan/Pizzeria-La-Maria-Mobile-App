@@ -10,6 +10,8 @@ import chevronLeft from '../assets/icons/chevron-left.png'
 import chevronRight from '../assets/icons/chevron-right.png'
 import pizza from '../assets/icons/pizza.png'
 import reservation from '../assets/icons/reservation.png'
+import qr from '../assets/icons/qr-code.png'
+
 
 export default {
   heart,
@@ -23,5 +25,6 @@ export default {
   chevronLeft,
   chevronRight,
   pizza,
-  reservation
+  reservation,
+  qr
 };

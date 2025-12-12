@@ -34,8 +34,6 @@ const MyTextInput = ({
   isPassword,
   hidePassword,
   setHidePassword,
-  setValue,
-  value,
   ...props
 }) => {
   return (
@@ -46,8 +44,6 @@ const MyTextInput = ({
       <StyledInputLabel style={{ color: primary }}>{label1}</StyledInputLabel>
       <StyledTextInput
         {...props}
-        onChangeText={(text) => setValue(text)}
-        value={value}
       />
 
       {isPassword && (
@@ -65,56 +61,42 @@ const MyTextInput = ({
 
 const SignUp = () => {
   const [hidePassword, setHidePassword] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [fullName, setFullName] = useState("");
   const [error, setError] = useState("");
 
-  const navigation = useNavigation(); // Inițializăm hook-ul useNavigation pentru a obține obiectul de navigare
-  ; // Adăugăm această linie pentru a afișa obiectul navigation în consolă
-  // Inițializăm hook-ul useNavigation pentru a obține obiectul de navigare
+  const navigation = useNavigation();
 
-  const handleSignUp = () => {
-    // Verificați dacă toate câmpurile sunt completate
+  const handleSignUp = async (values, { setSubmitting }) => {
+    const { email, password, confirmPassword, fullName } = values;
+
     if (!email || !password || !confirmPassword || !fullName) {
       setError("Toate câmpurile sunt obligatorii!");
+      setSubmitting(false);
       return;
     }
 
-    // Verificați dacă parolele coincid
     if (password !== confirmPassword) {
       setError("Parolele nu se potrivesc!");
+      setSubmitting(false);
       return;
     }
 
-    // Creați utilizatorul în Firebase cu numele complet inclus
-    auth
-      .createUserWithEmailAndPassword(email, password)
-      .then((userCredentials) => {
-        const user = userCredentials.user;
-
-        // Adăugați numele complet în obiectul de date al utilizatorului
-        return user.updateProfile({
-          displayName: fullName,
-        });
-      })
-      .then(() => {
-        console.log(
-          "Utilizatorul a fost înregistrat cu succes cu emailul:",
-          email,
-          "!"
-        );
-        navigation.replace("Profil");
-        // Aici poți adăuga redirecționarea către pagina de bun venit sau alte acțiuni
-      })
-      .catch((error) => {
-        if (error.code === "auth/email-already-in-use") {
-          setError("Adresa de email este deja înregistrată!");
-        } else {
-          setError(error.message);
-        }
+    try {
+      const userCredentials = await auth.createUserWithEmailAndPassword(email, password);
+      const user = userCredentials.user;
+      await user.updateProfile({
+        displayName: fullName,
       });
+      console.log("Utilizatorul a fost înregistrat cu succes cu emailul:", email, "!");
+      navigation.replace("Profil");
+    } catch (error) {
+      if (error.code === "auth/email-already-in-use") {
+        setError("Adresa de email este deja înregistrată!");
+      } else {
+        setError(error.message);
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -132,11 +114,9 @@ const SignUp = () => {
               password: "",
               confirmPassword: "",
             }}
-            onSubmit={(values) => {
-              console.log(values);
-            }}
+            onSubmit={handleSignUp}
           >
-            {({ handleChange, handleBlur, handleSubmit, values }) => (
+            {({ handleChange, handleBlur, handleSubmit, values, isSubmitting }) => (
               <StyledFormArea>
                 {error ? <MsgBox type="error">{error}</MsgBox> : null}
                 <MyTextInput
@@ -144,16 +124,18 @@ const SignUp = () => {
                   icon="person"
                   placeholder="Stolojan Andrei"
                   placeholderTextColor={darkLight}
-                  setValue={setFullName}
-                  value={fullName}
+                  onChangeText={handleChange('fullName')}
+                  onBlur={handleBlur('fullName')}
+                  value={values.fullName}
                 />
                 <MyTextInput
                   label1="Adresa de email"
                   icon="mail"
                   placeholder="pizzerialamaria@gmail.com"
                   placeholderTextColor={darkLight}
-                  setValue={setEmail}
-                  value={email}
+                  onChangeText={handleChange('email')}
+                  onBlur={handleBlur('email')}
+                  value={values.email}
                   keyboardType="email-address"
                 />
                 <MyTextInput
@@ -161,8 +143,9 @@ const SignUp = () => {
                   icon="lock"
                   placeholder="*********"
                   placeholderTextColor={darkLight}
-                  setValue={setPassword}
-                  value={password}
+                  onChangeText={handleChange('password')}
+                  onBlur={handleBlur('password')}
+                  value={values.password}
                   secureTextEntry={hidePassword}
                   isPassword={true}
                   hidePassword={hidePassword}
@@ -173,8 +156,9 @@ const SignUp = () => {
                   icon="lock"
                   placeholder="*********"
                   placeholderTextColor={darkLight}
-                  setValue={setConfirmPassword}
-                  value={confirmPassword}
+                  onChangeText={handleChange('confirmPassword')}
+                  onBlur={handleBlur('confirmPassword')}
+                  value={values.confirmPassword}
                   secureTextEntry={hidePassword}
                   isPassword={true}
                   hidePassword={hidePassword}
@@ -189,7 +173,7 @@ const SignUp = () => {
                     marginBottom: 0,
                   }}
                 >
-                  <StyledButton style={{ width: 200 }} onPress={handleSignUp}>
+                  <StyledButton style={{ width: 200 }} onPress={handleSubmit} disabled={isSubmitting}>
                     <ButtonText>Creează</ButtonText>
                   </StyledButton>
                 </View>

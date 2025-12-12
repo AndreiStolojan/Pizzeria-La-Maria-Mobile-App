@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Dimensions, Platform, Keyboard } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import Comanda from "../Screens/Comanda";
 import Rezervari from "../Screens/Rezervari";
 import Login from "../Screens/Login";
@@ -11,10 +11,13 @@ import Profil from "../Screens/Profil";
 import CategorieMeniu from "../Screens/CategorieMeniu";
 import Cart from "../Screens/Cart";
 import ConfirmareComanda from "../Screens/ConfirmareComanda";
-import Icon from "react-native-vector-icons/MaterialIcons"; // Importă componenta Icon
+import QRScanner from '../Screens/QRScanner';
+import Icon from "react-native-vector-icons/MaterialIcons"; 
 import { Image, TouchableOpacity } from "react-native";
 import icons from "../../../constants/icons";
 import { Colors } from "../../../styles";
+
+import { auth } from "../../../firebase";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -25,8 +28,13 @@ const windowHeight = Dimensions.get("window").height;
 
 const RootStack = () => {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((authenticatedUser) => {
+      setUser(authenticatedUser);
+    });
+
     const keyboardDidShowListener = Keyboard.addListener(
       "keyboardDidShow",
       () => {
@@ -41,6 +49,7 @@ const RootStack = () => {
     );
 
     return () => {
+      unsubscribe();
       keyboardDidHideListener.remove();
       keyboardDidShowListener.remove();
     };
@@ -54,9 +63,9 @@ const RootStack = () => {
           headerTintColor: "transparent",
           headerTransparent: true,
           headerLeftContainerStyle: {
-            paddingLeft: windowWidth * 0.05, // Folosește o dimensiune relativă
+            paddingLeft: windowWidth * 0.05, 
           },
-          headerRightContainerStyle: { paddingRight: windowWidth * 0.05 }, // Folosește o dimensiune relativă
+          headerRightContainerStyle: { paddingRight: windowWidth * 0.05 }, 
         }}
         initialRouteName="Main"
       >
@@ -82,7 +91,7 @@ const RootStack = () => {
             headerLeft: () => (
               <TouchableOpacity
                 style={{ marginLeft: 20 }}
-                onPress={() => navigation.navigate("Main")} // Modifică aici
+                onPress={() => navigation.navigate("Main")} 
               >
                 <Icon name="arrow-back" size={33} color="white" />
               </TouchableOpacity>
@@ -113,9 +122,13 @@ const RootStack = () => {
                   let iconName;
 
                   if (route.name === "Comanda") {
-                    iconName = focused ? icons.pizza : icons.pizza; // Iconita pentru Comanda
+                    iconName = icons.pizza; 
                   } else if (route.name === "Rezervari") {
-                    iconName = focused ? icons.reservation : icons.reservation; // Iconita pentru Rezervari
+                    iconName = icons.reservation; 
+                  } else if (route.name === "QRScanner") {
+                    // Aici poți pune o iconiță diferită, de ex. camera sau qr
+                    // Momentan am lăsat reservation ca să nu crape dacă nu ai alta
+                    iconName = icons.reservation; 
                   }
 
                   return (
@@ -135,23 +148,23 @@ const RootStack = () => {
                   display: "none",
                 },
                 tabBarStyle: {
-                  backgroundColor: "black", // Setează culoarea fundalului barei de navigare a tabului
+                  backgroundColor: "black", 
                   borderTopWidth: 0,
-                  position: "absolute", // Poziționează bara de navigare deasupra conținutului
-                  elevation: 0, // Elimină umbra Android
-                  borderTopLeftRadius: 40, // Rotunjirea colțurilor stânga-sus
-                  borderTopRightRadius: 40, // Rotunjirea colțurilor dreapta-sus
-                  borderBottomLeftRadius: 40, // Rotunjirea colțurilor din partea de jos
+                  position: "absolute", 
+                  elevation: 0, 
+                  borderTopLeftRadius: 40, 
+                  borderTopRightRadius: 40, 
+                  borderBottomLeftRadius: 40, 
                   borderBottomRightRadius: 40,
-                  left: 30, // Spațiu la stânga
-                  right: 30, // Spațiu la dreapta
-                  bottom: Platform.OS === "ios" ? windowHeight * 0.05 : 0, // Spațiu jos
-                  minHeight: 60, // Înălțimea minimă a tabbarului
-                  flexDirection: "row", // Așezarea elementelor într-o singură linie
-                  justifyContent: "space-around", // Distribuie spațiul liber între elementele tabbarului
-                  alignItems: "center", // Alinierea elementelor pe axa verticală
-                  bottom: windowHeight * 0.05, // Setăm bottom pentru iOS la o anumită valoare pentru a fi deasupra liniei
-                  display: isKeyboardVisible ? "none" : "flex", // Ascunde tab bar-ul când tastatura este vizibilă
+                  left: 30, 
+                  right: 30, 
+                  bottom: Platform.OS === "ios" ? windowHeight * 0.05 : 0, 
+                  minHeight: 60, 
+                  flexDirection: "row", 
+                  justifyContent: "space-around", 
+                  alignItems: "center", 
+                  bottom: windowHeight * 0.05, 
+                  display: isKeyboardVisible ? "none" : "flex", 
                 },
                 headerTransparent: true,
                 headerTitle: " ",
@@ -210,9 +223,35 @@ const RootStack = () => {
                   ),
                 }}
               />
+              
+              {/* Afișăm Tab-ul de Scanner DOAR dacă userul este logat */}
+              {user && (
+                <Tab.Screen
+                  name="QRScanner"
+                  component={QRScanner}
+                  options={{
+                    tabBarIcon: ({ color, size }) => (
+                      // Aici ar fi ideal să pui o iconiță de tip QR sau Cameră
+                      // Folosesc <Icon> din vector-icons pentru a o distinge de rezervări
+                      <Image
+                      source={icons.qr}
+                      style={{
+                        width: windowWidth * 0.08,
+                        height: windowWidth * 0.08,
+                        tintColor: color,
+                        ...(Platform.OS === "ios" && {
+                          marginTop: windowHeight * 0.03,
+                        }),
+                      }}
+                    />
+                    ),
+                  }}
+                />
+              )}
             </Tab.Navigator>
           )}
         </Stack.Screen>
+        
         <Stack.Screen name="Meniu" component={CategorieMeniu} />
         <Stack.Screen
           name="Cos"
@@ -224,13 +263,12 @@ const RootStack = () => {
           options={{ presentation: "fullScreenModal" }}
           component={ConfirmareComanda}
         />
+        
+        {/* AM ȘTERS Stack.Screen name="QRScanner" DE AICI PENTRU A EVITA DUPLICAREA */}
+        
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
 
 export default RootStack;
-
-
-
-

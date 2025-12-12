@@ -2,23 +2,21 @@ import React, { useState, useEffect } from "react";
 import {
   ScrollView,
   SafeAreaView,
-  TouchableOpacity,
-  Alert,
   Text,
   View,
   StyleSheet,
   Dimensions,
-  Image
+  Image,
+  Alert
 } from "react-native";
 import { ProfilePicture, ProfilePictureContainer } from "../../../styles";
-import { auth, storage } from "../../../firebase";
-import UserPermissions from "../Components/Permission";
-import * as ImagePicker from "expo-image-picker";
+// MODIFICARE 1: Importăm firestore de aici, nu îl mai creăm manual jos
+import { auth, storage, firestore } from "../../../firebase"; 
 import { Colors } from "../../../styles";
-import { StyledButton, ButtonText, Avatar } from "../../../styles";
+import { StyledButton, ButtonText } from "../../../styles";
 import { useNavigation } from "@react-navigation/native";
 
-const { red_logo, secondary } = Colors;
+const { red_logo } = Colors;
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -26,6 +24,7 @@ const Profil = () => {
   const navigation = useNavigation();
   const [user, setUser] = useState(null);
   const [firstName, setFirstName] = useState("");
+  const [loyaltyPoints, setLoyaltyPoints] = useState(0); // Pornim de la 0
 
   const goToLogin = () => {
     navigation.replace("Login");
@@ -37,31 +36,52 @@ const Profil = () => {
       navigation.replace("Login");
     } catch (error) {
       console.error("Eroare la deconectare:", error.message);
-      Alert.alert(
-        "Eroare",
-        "A apărut o eroare la deconectare. Vă rugăm să încercați din nou."
-      );
+      Alert.alert("Eroare", "A apărut o eroare la deconectare.");
     }
   };
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((authenticatedUser) => {
+    // Ascultăm starea de autentificare
+    const unsubscribeAuth = auth.onAuthStateChanged((authenticatedUser) => {
       if (authenticatedUser) {
         setUser(authenticatedUser);
+        
+        // Extragere prenume
         const fullName = authenticatedUser.displayName;
         if (fullName) {
           const splitName = fullName.split(" ");
-          const firstName = splitName[1];
-          setFirstName(firstName);
-        } else {
-          setFirstName("");
+          setFirstName(splitName[1] || splitName[0]); // Siguranță dacă nu are spațiu
         }
+
+        // --- ASCULTARE PUNCTE ÎN TIMP REAL ---
+        // Folosim instanța 'firestore' importată
+        const userDocRef = firestore.collection('users').doc(authenticatedUser.uid);
+        
+        const unsubscribeFirestore = userDocRef.onSnapshot((doc) => {
+          if (doc.exists) {
+            // Luăm datele, sau 0 dacă câmpul lipsește
+            setLoyaltyPoints(doc.data().loyaltyPoints || 0);
+          } else {
+            // Documentul nu există încă (utilizator nou care n-a scanat nimic)
+            setLoyaltyPoints(0);
+          }
+        }, (error) => {
+           console.log("Eroare la citire puncte:", error);
+        });
+
+        // Curățăm ascultătorul de Firestore când userul se deloghează
+        return () => unsubscribeFirestore();
+
       } else {
+        // Dacă nu e logat
         setUser(null);
         setFirstName("");
+        setLoyaltyPoints(0);
       }
     });
-    return () => unsubscribe();
+
+    // Curățăm ascultătorul de Auth la ieșirea din pagină
+    return () => unsubscribeAuth();
   }, []);
 
   return (
@@ -69,7 +89,7 @@ const Profil = () => {
       <ScrollView nestedScrollEnabled={true} style={styles.scrollView}>
         <View style={styles.innerContainer}>
           {user ? (
-            <Text style={styles.greetingText}>Salut, {firstName}</Text>
+            <Text style={styles.greetingText}>Salut, {firstName}!</Text>
           ) : (
             <Text style={styles.greetingText2}>
               Te vrem în familia Pizzeriei La Maria!
@@ -88,17 +108,28 @@ const Profil = () => {
                 />
               </ProfilePictureContainer>
             )}
+
             <View style={styles.userInfoContainer}>
               {user && (
-                <Text style={styles.userInfoText}>
-                  Nume: {user.displayName || ""}
-                </Text>
-              )}
-              {user && user.email && (
-                <Text style={styles.userInfoText}>Email: {user.email}</Text>
+                <>
+                    <Text style={styles.userInfoText}>
+                    Nume: {user.displayName || "Nespecificat"}
+                    </Text>
+                    
+                    {user.email && (
+                    <Text style={styles.userInfoText}>Email: {user.email}</Text>
+                    )}
+
+                    {/* --- ZONA PUNCTE EVIDENȚIATĂ --- */}
+                    <View style={styles.pointsHighlight}>
+                        <Text style={styles.pointsLabel}>Puncte Fidelitate:</Text>
+                        <Text style={styles.pointsValue}>{loyaltyPoints}</Text>
+                    </View>
+                </>
               )}
             </View>
           </View>
+
           {!user && (
             <View style={styles.avatarContainer}>
               <Image
@@ -109,18 +140,13 @@ const Profil = () => {
             </View>
           )}
 
-          {user && (
+          {user ? (
             <StyledButton style={styles.button} onPress={handleLogout}>
-              <ButtonText style={styles.buttonText}>
-                Deconectați-vă
-              </ButtonText>
+              <ButtonText style={styles.buttonText}>Deconectați-vă</ButtonText>
             </StyledButton>
-          )}
-          {!user && (
+          ) : (
             <StyledButton style={styles.button} onPress={goToLogin}>
-              <ButtonText style={styles.buttonText}>
-                Conectați-vă
-              </ButtonText>
+              <ButtonText style={styles.buttonText}>Conectați-vă</ButtonText>
             </StyledButton>
           )}
         </View>
@@ -148,58 +174,75 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   profilePictureContainer: {
-    marginBottom: windowHeight * 0.05,
+    marginBottom: windowHeight * 0.02,
     marginTop: windowHeight * 0.05,
   },
   profilePicture: {
     tintColor: "grey",
   },
   userInfoContainer: {
-    backgroundColor: "transparent",
-    padding: windowHeight * 0.02,
-    borderRadius: 5,
-    marginTop: windowHeight * 0.05,
+    width: '100%',
+    padding: 10,
+    marginTop: 10,
   },
   userInfoText: {
-    fontSize: windowWidth * 0.045,
+    fontSize: 16,
     color: "#ffffff",
-    textAlign: "left",
-    marginTop: windowHeight * 0.02,
+    textAlign: "center",
+    marginBottom: 5,
+  },
+  // Stiluri noi pentru puncte
+  pointsHighlight: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)', // fundal semi-transparent
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 20,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'white'
+  },
+  pointsLabel: {
+    color: '#eee',
+    fontSize: 14,
+    textTransform: 'uppercase'
+  },
+  pointsValue: {
+    color: 'white',
+    fontSize: 32,
+    fontWeight: 'bold',
+    marginTop: 5
   },
   greetingText: {
     fontSize: windowWidth * 0.055,
     fontWeight: "bold",
     textAlign: "center",
-    marginBottom: 0,
     marginTop: windowHeight * 0.03,
     color: "#ffffff",
   },
   greetingText2: {
-    fontSize: windowWidth * 0.065,
+    fontSize: 22,
     fontWeight: "bold",
     textAlign: "center",
-    marginBottom: windowHeight * 0.01,
-    marginTop: windowHeight * 0.1,
-    marginLeft: windowWidth * 0.05,
-    marginRight: windowWidth * 0.05,
+    marginTop: 40,
+    marginBottom: 20,
     color: "#ffffff",
   },
   avatarContainer: {
     alignItems: "center",
-    marginBottom: windowHeight * 0.05, // Margin-bottom mai mare între imagine și butoanele de dedesubt
+    marginBottom: 30,
   },
   avatar: {
-    width: windowWidth * 0.6, // Ajustează dimensiunea avatarului pentru a fi mai mare
-    height: windowWidth * 0.6, // Ajustează dimensiunea avatarului pentru a fi mai mare
-    borderRadius: windowWidth * 0.3, // Asigură că avatarul rămâne circular
+    width: windowWidth * 0.6,
+    height: windowWidth * 0.6,
+    borderRadius: windowWidth * 0.3,
   },
   button: {
     width: windowWidth * 0.6,
     alignSelf: "center",
-    marginTop: windowHeight * 0.05,
+    marginTop: 30,
   },
   buttonText: {
-    fontSize: windowWidth * 0.05,
+    fontSize: 18,
   },
 });
 
