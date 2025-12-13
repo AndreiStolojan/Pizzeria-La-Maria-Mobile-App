@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     marginHorizontal: 20,
-    bottom: 10,
+    bottom: 20,
 
     
   },

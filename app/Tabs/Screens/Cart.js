@@ -9,6 +9,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { auth } from '../../../firebase';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
+import * as Location from 'expo-location';
+
+const RESTAURANT_COORDS = {
+    latitude: 45.74703495007546,
+    longitude: 21.214969523426273
+};
 
 export default function Cart() {
     const products = useSelector(selectRestaurant);
@@ -24,6 +30,9 @@ export default function Cart() {
     const [initialBalance, setInitialBalance] = useState('');
     const [discountApplied, setDiscountApplied] = useState(false);
     const [discountedTotal, setDiscountedTotal] = useState(null);
+    const [address, setAddress] = useState('');
+    const [deliveryTime, setDeliveryTime] = useState(null);
+    const [isCalculating, setIsCalculating] = useState(false);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -34,7 +43,84 @@ export default function Cart() {
             }
         };
         loadCards();
+        getCurrentLocation();
     }, []);
+
+    const getCurrentLocation = async () => {
+        setIsCalculating(true);
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert("Permisiune refuzată", "Introdu adresa manual.");
+            setIsCalculating(false);
+            return;
+        }
+
+        try {
+            let location = await Location.getCurrentPositionAsync({});
+            let addressResponse = await Location.reverseGeocodeAsync({
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude
+            });
+
+            if (addressResponse.length > 0) {
+                const addr = addressResponse[0];
+                const fullAddress = `${addr.street || ''} ${addr.streetNumber || ''}, ${addr.city || ''}`;
+                setAddress(fullAddress);
+            }
+            calculateEstimatedTime(location.coords.latitude, location.coords.longitude);
+        } catch (error) {
+            Alert.alert("Eroare", "Nu te-am putut localiza automat.");
+        } finally {
+            setIsCalculating(false);
+        }
+    };
+
+    const handleManualAddressConfirm = async () => {
+        if (!address.trim()) {
+            Alert.alert("Atenție", "Te rog introdu o adresă.");
+            return;
+        }
+        
+        Keyboard.dismiss();
+        setIsCalculating(true);
+
+        try {
+            let geocodedLocation = await Location.geocodeAsync(address);
+
+            if (geocodedLocation.length > 0) {
+                const result = geocodedLocation[0];
+                calculateEstimatedTime(result.latitude, result.longitude);
+            } else {
+                Alert.alert("Adresă necunoscută", "Nu am putut calcula distanța pentru această adresă. Verifică textul.");
+                setDeliveryTime(null);
+            }
+        } catch (error) {
+            Alert.alert("Eroare", "A apărut o problemă la căutarea adresei.");
+        } finally {
+            setIsCalculating(false);
+        }
+    };
+
+    const calculateEstimatedTime = (userLat, userLon) => {
+        const toRad = (value) => (value * Math.PI) / 180;
+        const R = 6371; 
+
+        const dLat = toRad(userLat - RESTAURANT_COORDS.latitude);
+        const dLon = toRad(userLon - RESTAURANT_COORDS.longitude);
+        
+        const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(toRad(RESTAURANT_COORDS.latitude)) * Math.cos(toRad(userLat)) * Math.sin(dLon/2) * Math.sin(dLon/2);
+        
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        const distanceKm = R * c;
+
+        const travelTime = (distanceKm / 30) * 60; 
+        const prepTime = 20;
+        const totalMinutes = Math.round(travelTime + prepTime);
+
+        setDeliveryTime(totalMinutes);
+    };
 
     const handleApplyDiscount = async () => {
       const user = auth.currentUser;
@@ -156,6 +242,43 @@ export default function Cart() {
             </ScrollView>
 
             <View style={styles.totalContainer}>
+                <View style={styles.deliveryContainer}>
+                    <Text style={styles.sectionTitle}>Adresa de livrare:</Text>
+    
+                    <View style={styles.addressInputRow}>
+                        <TextInput 
+                            style={styles.addressInput}
+                            placeholder="Strada, Număr, Oraș..."
+                            placeholderTextColor="#ccc"
+                            value={address}
+                            onChangeText={(text) => {
+                                setAddress(text);
+                                setDeliveryTime(null); 
+                            }}
+                            onSubmitEditing={handleManualAddressConfirm} 
+                        />
+                        <TouchableOpacity onPress={getCurrentLocation} style={styles.gpsButton}>
+                            <Icon.MapPin stroke="#b0a96d" width={20} height={20} />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.timeRow}>
+                        <Icon.Clock stroke="white" width={18} height={18} />
+                            <Text style={styles.deliveryText}>
+                                {isCalculating ? 
+                                    " Se calculează..." : 
+                                    (deliveryTime ? ` Estimare: ~${deliveryTime} minute` : " Introdu adresa pentru calcul")
+                                }
+                            </Text>
+                    </View>
+    
+                    {address.length > 3 && !isCalculating && !deliveryTime && (
+                        <TouchableOpacity onPress={handleManualAddressConfirm} style={styles.calcButton}>
+                            <Text style={styles.calcButtonText}>Calculează timp livrare</Text>
+                        </TouchableOpacity>
+                    )}
+                </View>
+
                 <View style={styles.totalRow}>
                     <Text style={styles.totalText}>Subtotal</Text>
                     <Text style={styles.totalText}>{cartTotal.toFixed(2)}lei</Text>
@@ -367,6 +490,7 @@ const styles = StyleSheet.create({
     paymentButtonContainer: {
         marginHorizontal: 30,
         marginTop: 15,
+        marginBottom: 15
     },
     paymentButton: {
         backgroundColor: 'white',
@@ -429,6 +553,62 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
     },
-    
+deliveryContainer: {
+        backgroundColor: 'rgba(0,0,0, 0.1)',
+        borderRadius: 15,
+        padding: 15,
+        marginBottom: 15,
+        marginHorizontal: 10,
+    },
+    sectionTitle: {
+        color: 'white',
+        fontWeight: 'bold',
+        marginBottom: 5,
+        fontSize: 14
+    },
+    addressInputRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10
+    },
+    addressInput: {
+        flex: 1,
+        backgroundColor: 'white',
+        borderRadius: 8,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        color: '#000',
+        marginRight: 10
+    },
+    gpsButton: {
+        backgroundColor: 'white',
+        padding: 10,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    timeRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    deliveryText: {
+        color: 'white',
+        fontWeight: '600',
+        marginLeft: 8,
+        fontSize: 14,
+    },
+    calcButton: {
+        marginTop: 10,
+        backgroundColor: 'white',
+        padding: 8,
+        borderRadius: 8,
+        alignItems: 'center',
+        alignSelf: 'flex-start'
+    },
+    calcButtonText: {
+        color: '#b0a96d',
+        fontWeight: 'bold',
+        fontSize: 13
+    },
     
 });
