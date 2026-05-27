@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Caffe",
-    "slug": "Caffe",
+    "name": "Pizzeria La Maria",
+    "slug": "pizzeria-la-maria",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/pizzerie_logo_copy.png",

@@ -43,6 +43,12 @@ Install dependencies:
 npm install
 ```
 
+Create your local environment file:
+
+```bash
+cp .env.example .env
+```
+
 Start the Expo development server:
 
 ```bash
@@ -71,7 +77,7 @@ npm run web
 
 Firebase configuration is loaded from environment variables through `react-native-dotenv`.
 
-Create a local environment file with values for:
+Use `.env.example` as the template for your local `.env` file:
 
 ```text
 FIREBASE_API_KEY
@@ -82,8 +88,20 @@ FIREBASE_MESSAGING_SENDER_ID
 FIREBASE_APP_ID
 ```
 
+## Project Structure
+
+```text
+src/
+  components/   Reusable UI and form helpers
+  config/       Firebase and app configuration
+  constants/    Static menu data and icon exports
+  navigation/   Stack and tab navigation
+  screens/      App screens and flows
+  store/        Redux store, selectors, and slices
+  styles/       Shared styled-components and style modules
+assets/         Fonts, icons, and images used by the app
+```
+
 ## Notes
 
-The repository includes generated iOS build files. For long-term maintenance, these should usually be excluded from version control and regenerated locally when needed.
-
-Before production use, the app would need stricter validation, security rule review, payment/order backend integration, automated tests, and release configuration.
+Generated build output, local editor settings, and local environment files are intentionally excluded from version control. Before production use, the app would need stricter validation, security rule review, payment/order backend integration, automated tests, and release configuration.

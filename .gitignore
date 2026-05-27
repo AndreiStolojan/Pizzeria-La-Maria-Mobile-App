@@ -3,6 +3,9 @@
 # dependencies
 node_modules/
 
+# local workspace/editor files
+.vscode/
+
 # Expo
 .expo/
 dist/
@@ -10,6 +13,9 @@ web-build/
 
 # Native
 *.orig.*
+ios/.xcode.env.local
+ios/build/
+ios/DerivedData/
 *.jks
 *.p8
 *.p12
@@ -31,6 +37,7 @@ yarn-error.*
 # local env files
 .env
 .env*.local
+!.env.example
 
 # typescript
 *.tsbuildinfo
