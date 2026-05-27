@@ -1,55 +1,89 @@
-# Mobile Application README
+# Pizzeria La Maria Mobile App
 
-## Overview
+A React Native mobile application prototype for a restaurant ordering and reservation experience. The app includes menu browsing, cart management, user authentication, reservations, profile data, and QR-based loyalty points.
 
-Welcome to the Mobile Application! This guide will help you get started with running the application on your personal device or an emulator. The application is compatible with both Android and Samsung devices. 
+## Features
 
-## Prerequisites
+- Mobile navigation with stack and bottom tab flows
+- Menu category screens for restaurant products
+- Cart state management with Redux Toolkit
+- Order confirmation flow
+- User login and sign-up with Firebase Authentication
+- Reservation form with local persistence through AsyncStorage
+- Profile screen backed by Firebase data
+- QR scanner for loyalty point updates
+- Firebase Firestore integration
+- Expo camera, image, location, and font integrations
 
-Before you begin, ensure you have the following:
+## Tech Stack
 
-- Node.js and npm installed on your computer.
-- Expo CLI for managing your project.
-- An Android emulator like Android Studio, or the Expo Go app installed on your mobile device.
+- React Native
+- Expo
+- React Navigation
+- Redux Toolkit
+- Firebase Authentication
+- Cloud Firestore
+- Firebase Storage
+- AsyncStorage
+- Expo Camera
+- Expo Location
+- JavaScript
+
+## Project Type
+
+Production-style portfolio project.
+
+This project models a real restaurant mobile app workflow, but it should be treated as a prototype. It demonstrates mobile UI, navigation, authentication, local state, and Firebase integration rather than a fully released production app.
 
 ## Getting Started
 
-### Cloning the Repository
-
-First, clone the repository from GitHub:
+Install dependencies:
 
 ```bash
-git clone <repository_url>
-cd <repository_directory>
+npm install
 ```
-Installing Dependencies
-Once you have cloned the repository, you need to install the required dependencies. Run the following command in the project directory:
 
-```bash
-npm install expo-cli --legacy-peer-deps
-```
-Starting the Server
-After installing the dependencies, start the Expo server with the following command:
-
+Start the Expo development server:
 
 ```bash
 npm start
 ```
-This command will start the Expo development server and open a new browser window with the Expo DevTools.
 
-Running on an Emulator
-To run the application on an Android emulator, press the a key in the terminal where the Expo server is running. Make sure your Android emulator is up and running.
+Run on Android:
 
-Running on a Physical Device
-To run the application on your personal phone:
+```bash
+npm run android
+```
 
-Install the Expo Go app from the Google Play Store.
-Open the Expo Go app on your phone.
-Scan the QR code displayed in the Expo DevTools in your browser.
-Additional Information
-For detailed instructions on setting up Android Studio and emulators, refer to the Android Studio documentation.
-For troubleshooting and additional help, visit the Expo documentation.
-Contact
-For further assistance, please reach out to our support team at andreistolojan@gmail.com.
+Run on iOS:
 
-Thank you for using our application!
+```bash
+npm run ios
+```
+
+Run on web:
+
+```bash
+npm run web
+```
+
+## Environment Variables
+
+Firebase configuration is loaded from environment variables through `react-native-dotenv`.
+
+Create a local environment file with values for:
+
+```text
+FIREBASE_API_KEY
+FIREBASE_AUTH_DOMAIN
+FIREBASE_PROJECT_ID
+FIREBASE_STORAGE_BUCKET
+FIREBASE_MESSAGING_SENDER_ID
+FIREBASE_APP_ID
+```
+
+## Notes
+
+The repository includes generated iOS build files. For long-term maintenance, these should usually be excluded from version control and regenerated locally when needed.
+
+Before production use, the app would need stricter validation, security rule review, payment/order backend integration, automated tests, and release configuration.
